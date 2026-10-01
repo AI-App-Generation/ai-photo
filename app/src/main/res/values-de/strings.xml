@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">AI Photo</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="back">Zurück</string>
+    <string name="next">Weiter</string>
+    <string name="skip">Überspringen</string>
+    <string name="done">Fertig</string>
+    <string name="save">Speichern</string>
+    <string name="close">Schließen</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="loading">Wird geladen…</string>
+    <string name="error">Fehler</string>
+    <string name="error_generic">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
+    <string name="home">Startseite</string>
+    <string name="settings">Einstellungen</string>
+    <string name="language">Sprache</string>
+
+    <string name="select_language">Sprache auswählen</string>
+    <string name="select_region">Region auswählen</string>
+
+    <!-- Entry flow: Splash / Language / Survey / Onboarding, and the Settings language row -->
+    <string name="splash_tagline">Verwandle jedes Foto in KI-Kunst</string>
+    <string name="splash_loading">Dein KI-Studio wird vorbereitet…</string>
+    <string name="splash_ad_notice">Diese Aktion kann Werbung enthalten</string>
+    <string name="loading_ad">Werbung wird geladen, bitte warten…</string>
+    <string name="language_title">Wähle deine Sprache</string>
+    <string name="language_subtitle">Du kannst sie jederzeit in den Einstellungen ändern</string>
+    <string name="region_subtitle">Wähle die Region, die am besten zu dir passt</string>
+    <string name="survey_title">Was möchtest du erstellen?</string>
+    <string name="survey_subtitle">Wähle alles aus, was dich interessiert, und wir passen die App für dich an.</string>
+    <string name="survey_hint">Wähle mindestens eine Option</string>
+    <string name="survey_selected_count">Ausgewählt: %1$d</string>
+    <string name="survey_continue">Weiter</string>
+    <string name="survey_opt_portraits">KI-Porträts</string>
+    <string name="survey_opt_enhance">Fotos verbessern</string>
+    <string name="survey_opt_remove_bg">Hintergrund entfernen</string>
+    <string name="survey_opt_colorize">Alte Fotos kolorieren</string>
+    <string name="survey_opt_face_swap">Gesichtstausch</string>
+    <string name="survey_opt_try_on">Virtuelle Anprobe</string>
+    <string name="onboarding_1_title">Hunderte KI-Stile</string>
+    <string name="onboarding_1_body">Wähle eine Vorlage und verwandle ein einfaches Selfie in Sekunden in ein Porträt in Studioqualität.</string>
+    <string name="onboarding_2_title">Erinnerungen neu beleben</string>
+    <string name="onboarding_2_body">Schärfe unscharfe Aufnahmen und stelle alte Schwarz-Weiß-Fotos in voller Farbe wieder her.</string>
+    <string name="onboarding_3_title">Willkommen bei %1$s</string>
+    <string name="onboarding_3_body">Dein persönliches KI-Fotostudio ist bereit. Lass uns etwas Großartiges erschaffen.</string>
+    <string name="onboarding_get_started">Los geht\'s</string>
+    <string name="profile_language">Sprache</string>
+
+    <!-- Welcome back overlay -->
+    <string name="welcome_back_title">Willkommen zurück!</string>
+    <string name="welcome_back_body">Dein KI-Studio ist bereit. Mach genau dort weiter, wo du aufgehört hast.</string>
+    <string name="welcome_back_continue">Weiter</string>
+</resources>

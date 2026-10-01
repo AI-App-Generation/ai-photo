@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">AI Photo</string>
+
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="back">返回</string>
+    <string name="next">下一步</string>
+    <string name="skip">跳过</string>
+    <string name="done">完成</string>
+    <string name="save">保存</string>
+    <string name="close">关闭</string>
+    <string name="confirm">确认</string>
+    <string name="retry">重试</string>
+    <string name="loading">加载中…</string>
+    <string name="error">错误</string>
+    <string name="error_generic">出了点问题，请重试。</string>
+    <string name="home">首页</string>
+    <string name="settings">设置</string>
+    <string name="language">语言</string>
+
+    <string name="select_language">选择语言</string>
+    <string name="select_region">选择地区</string>
+
+    <!-- Entry flow: Splash / Language / Survey / Onboarding, and the Settings language row -->
+    <string name="splash_tagline">让每张照片都变成 AI 艺术</string>
+    <string name="splash_loading">正在准备你的 AI 工作室…</string>
+    <string name="splash_ad_notice">此操作可能包含广告</string>
+    <string name="loading_ad">广告加载中，请稍候…</string>
+    <string name="language_title">选择语言</string>
+    <string name="language_subtitle">你可以随时在设置中更改</string>
+    <string name="region_subtitle">选择最适合你的地区</string>
+    <string name="survey_title">你想创作什么？</string>
+    <string name="survey_subtitle">选择你感兴趣的所有内容，我们将为你定制应用。</string>
+    <string name="survey_hint">请至少选择一项</string>
+    <string name="survey_selected_count">已选择：%1$d</string>
+    <string name="survey_continue">继续</string>
+    <string name="survey_opt_portraits">AI 写真</string>
+    <string name="survey_opt_enhance">照片增强</string>
+    <string name="survey_opt_remove_bg">移除背景</string>
+    <string name="survey_opt_colorize">老照片上色</string>
+    <string name="survey_opt_face_swap">AI 换脸</string>
+    <string name="survey_opt_try_on">虚拟试穿</string>
+    <string name="onboarding_1_title">数百种 AI 风格</string>
+    <string name="onboarding_1_body">选择一个模板，几秒内即可把一张自拍变成影棚级人像。</string>
+    <string name="onboarding_2_title">让回忆重焕光彩</string>
+    <string name="onboarding_2_body">让模糊照片变清晰，并将黑白老照片还原为全彩。</string>
+    <string name="onboarding_3_title">欢迎使用 %1$s</string>
+    <string name="onboarding_3_body">你的专属 AI 照片工作室已就绪。一起创作精彩作品吧。</string>
+    <string name="onboarding_get_started">立即开始</string>
+    <string name="profile_language">语言</string>
+
+    <!-- Welcome back overlay -->
+    <string name="welcome_back_title">欢迎回来！</string>
+    <string name="welcome_back_body">你的 AI 工作室已就绪，从上次离开的地方继续吧。</string>
+    <string name="welcome_back_continue">继续</string>
+</resources>

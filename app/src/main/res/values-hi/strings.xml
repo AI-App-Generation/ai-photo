@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">AI Photo</string>
+
+    <string name="ok">ठीक है</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="yes">हाँ</string>
+    <string name="no">नहीं</string>
+    <string name="back">वापस</string>
+    <string name="next">अगला</string>
+    <string name="skip">छोड़ें</string>
+    <string name="done">हो गया</string>
+    <string name="save">सहेजें</string>
+    <string name="close">बंद करें</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="loading">लोड हो रहा है…</string>
+    <string name="error">त्रुटि</string>
+    <string name="error_generic">कुछ गलत हो गया। कृपया पुनः प्रयास करें।</string>
+    <string name="home">होम</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="language">भाषा</string>
+
+    <string name="select_language">भाषा चुनें</string>
+    <string name="select_region">क्षेत्र चुनें</string>
+
+    <!-- Entry flow: Splash / Language / Survey / Onboarding, and the Settings language row -->
+    <string name="splash_tagline">हर फ़ोटो को AI आर्ट में बदलें</string>
+    <string name="splash_loading">आपका AI स्टूडियो तैयार हो रहा है…</string>
+    <string name="splash_ad_notice">इस क्रिया में विज्ञापन हो सकते हैं</string>
+    <string name="loading_ad">विज्ञापन लोड हो रहा है, कृपया प्रतीक्षा करें…</string>
+    <string name="language_title">अपनी भाषा चुनें</string>
+    <string name="language_subtitle">आप इसे सेटिंग्स में कभी भी बदल सकते हैं</string>
+    <string name="region_subtitle">अपने लिए सबसे उपयुक्त क्षेत्र चुनें</string>
+    <string name="survey_title">आप क्या बनाना चाहते हैं?</string>
+    <string name="survey_subtitle">जो कुछ भी आपको पसंद है उसे चुनें, हम ऐप को आपके अनुसार तैयार करेंगे।</string>
+    <string name="survey_hint">कम से कम एक विकल्प चुनें</string>
+    <string name="survey_selected_count">चयनित: %1$d</string>
+    <string name="survey_continue">जारी रखें</string>
+    <string name="survey_opt_portraits">AI पोर्ट्रेट</string>
+    <string name="survey_opt_enhance">फ़ोटो बेहतर करें</string>
+    <string name="survey_opt_remove_bg">बैकग्राउंड हटाएँ</string>
+    <string name="survey_opt_colorize">पुरानी फ़ोटो में रंग भरें</string>
+    <string name="survey_opt_face_swap">फ़ेस स्वैप</string>
+    <string name="survey_opt_try_on">वर्चुअल ट्राई-ऑन</string>
+    <string name="onboarding_1_title">सैकड़ों AI स्टाइल</string>
+    <string name="onboarding_1_body">एक टेम्पलेट चुनें और एक सेल्फ़ी को सेकंडों में स्टूडियो-क्वालिटी पोर्ट्रेट में बदलें।</string>
+    <string name="onboarding_2_title">यादों को फिर से जीवंत करें</string>
+    <string name="onboarding_2_body">धुंधली फ़ोटो को साफ़ करें और पुरानी ब्लैक-एंड-व्हाइट फ़ोटो को पूरे रंगों में बहाल करें।</string>
+    <string name="onboarding_3_title">%1$s में आपका स्वागत है</string>
+    <string name="onboarding_3_body">आपका निजी AI फ़ोटो स्टूडियो तैयार है। चलिए कुछ शानदार बनाते हैं।</string>
+    <string name="onboarding_get_started">शुरू करें</string>
+    <string name="profile_language">भाषा</string>
+
+    <!-- Welcome back overlay -->
+    <string name="welcome_back_title">फिर से स्वागत है!</string>
+    <string name="welcome_back_body">आपका AI स्टूडियो तैयार है। वहीं से जारी रखें जहाँ आपने छोड़ा था।</string>
+    <string name="welcome_back_continue">जारी रखें</string>
+</resources>

@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">AI Photo</string>
+
+    <string name="ok">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="back">Atrás</string>
+    <string name="next">Siguiente</string>
+    <string name="skip">Omitir</string>
+    <string name="done">Listo</string>
+    <string name="save">Guardar</string>
+    <string name="close">Cerrar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="retry">Reintentar</string>
+    <string name="loading">Cargando…</string>
+    <string name="error">Error</string>
+    <string name="error_generic">Algo salió mal. Inténtalo de nuevo.</string>
+    <string name="home">Inicio</string>
+    <string name="settings">Ajustes</string>
+    <string name="language">Idioma</string>
+
+    <string name="select_language">Seleccionar idioma</string>
+    <string name="select_region">Seleccionar región</string>
+
+    <!-- Entry flow: Splash / Language / Survey / Onboarding, and the Settings language row -->
+    <string name="splash_tagline">Convierte cada foto en arte con IA</string>
+    <string name="splash_loading">Preparando tu estudio de IA…</string>
+    <string name="splash_ad_notice">Esta acción puede contener anuncios</string>
+    <string name="loading_ad">Cargando anuncio, espera…</string>
+    <string name="language_title">Elige tu idioma</string>
+    <string name="language_subtitle">Puedes cambiarlo cuando quieras en Ajustes</string>
+    <string name="region_subtitle">Elige la región que mejor se adapte a ti</string>
+    <string name="survey_title">¿Qué quieres crear?</string>
+    <string name="survey_subtitle">Elige todo lo que te interese y adaptaremos la app para ti.</string>
+    <string name="survey_hint">Elige al menos una opción</string>
+    <string name="survey_selected_count">Seleccionados: %1$d</string>
+    <string name="survey_continue">Continuar</string>
+    <string name="survey_opt_portraits">Retratos con IA</string>
+    <string name="survey_opt_enhance">Mejorar fotos</string>
+    <string name="survey_opt_remove_bg">Quitar fondo</string>
+    <string name="survey_opt_colorize">Colorear fotos antiguas</string>
+    <string name="survey_opt_face_swap">Cambio de cara</string>
+    <string name="survey_opt_try_on">Probador virtual</string>
+    <string name="onboarding_1_title">Cientos de estilos de IA</string>
+    <string name="onboarding_1_body">Elige una plantilla y convierte un simple selfie en un retrato de estudio en segundos.</string>
+    <string name="onboarding_2_title">Devuelve la vida a tus recuerdos</string>
+    <string name="onboarding_2_body">Enfoca fotos borrosas y restaura fotos antiguas en blanco y negro a todo color.</string>
+    <string name="onboarding_3_title">Bienvenido a %1$s</string>
+    <string name="onboarding_3_body">Tu estudio de fotos con IA está listo. Creemos algo increíble.</string>
+    <string name="onboarding_get_started">Empezar</string>
+    <string name="profile_language">Idioma</string>
+
+    <!-- Welcome back overlay -->
+    <string name="welcome_back_title">¡Bienvenido de nuevo!</string>
+    <string name="welcome_back_body">Tu estudio de IA está listo. Continúa justo donde lo dejaste.</string>
+    <string name="welcome_back_continue">Continuar</string>
+</resources>

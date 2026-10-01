@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">AI Photo</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Annuler</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="back">Retour</string>
+    <string name="next">Suivant</string>
+    <string name="skip">Ignorer</string>
+    <string name="done">Terminé</string>
+    <string name="save">Enregistrer</string>
+    <string name="close">Fermer</string>
+    <string name="confirm">Confirmer</string>
+    <string name="retry">Réessayer</string>
+    <string name="loading">Chargement…</string>
+    <string name="error">Erreur</string>
+    <string name="error_generic">Une erreur s\'est produite. Veuillez réessayer.</string>
+    <string name="home">Accueil</string>
+    <string name="settings">Paramètres</string>
+    <string name="language">Langue</string>
+
+    <string name="select_language">Choisir la langue</string>
+    <string name="select_region">Choisir la région</string>
+
+    <!-- Entry flow: Splash / Language / Survey / Onboarding, and the Settings language row -->
+    <string name="splash_tagline">Transformez chaque photo en art IA</string>
+    <string name="splash_loading">Préparation de votre studio IA…</string>
+    <string name="splash_ad_notice">Cette action peut contenir des publicités</string>
+    <string name="loading_ad">Chargement de la publicité, veuillez patienter…</string>
+    <string name="language_title">Choisissez votre langue</string>
+    <string name="language_subtitle">Vous pouvez la modifier à tout moment dans les Paramètres</string>
+    <string name="region_subtitle">Choisissez la région qui vous correspond</string>
+    <string name="survey_title">Que voulez-vous créer ?</string>
+    <string name="survey_subtitle">Sélectionnez tout ce qui vous intéresse et nous adapterons l\'application pour vous.</string>
+    <string name="survey_hint">Choisissez au moins une option</string>
+    <string name="survey_selected_count">Sélectionnés : %1$d</string>
+    <string name="survey_continue">Continuer</string>
+    <string name="survey_opt_portraits">Portraits IA</string>
+    <string name="survey_opt_enhance">Améliorer les photos</string>
+    <string name="survey_opt_remove_bg">Supprimer l\'arrière-plan</string>
+    <string name="survey_opt_colorize">Coloriser les vieilles photos</string>
+    <string name="survey_opt_face_swap">Échange de visage</string>
+    <string name="survey_opt_try_on">Essayage virtuel</string>
+    <string name="onboarding_1_title">Des centaines de styles IA</string>
+    <string name="onboarding_1_body">Choisissez un modèle et transformez un simple selfie en portrait digne d\'un studio en quelques secondes.</string>
+    <string name="onboarding_2_title">Redonnez vie à vos souvenirs</string>
+    <string name="onboarding_2_body">Rendez nettes les photos floues et restaurez les vieilles photos noir et blanc en couleurs.</string>
+    <string name="onboarding_3_title">Bienvenue sur %1$s</string>
+    <string name="onboarding_3_body">Votre studio photo IA personnel est prêt. Créons quelque chose d\'incroyable.</string>
+    <string name="onboarding_get_started">Commencer</string>
+    <string name="profile_language">Langue</string>
+
+    <!-- Welcome back overlay -->
+    <string name="welcome_back_title">Bon retour !</string>
+    <string name="welcome_back_body">Votre studio IA est prêt. Reprenez là où vous vous étiez arrêté.</string>
+    <string name="welcome_back_continue">Continuer</string>
+</resources>

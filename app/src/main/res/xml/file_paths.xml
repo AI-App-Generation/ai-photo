@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Paths FileProvider is allowed to serve to other apps (share sheet, system camera).
+    Scoped to exactly the two directories FileManager owns, plus the staging folder used for
+    watermarked export copies. Nothing else in filesDir/cacheDir is exposed.
+-->
+<paths>
+    <files-path
+        name="sources"
+        path="sources/" />
+    <files-path
+        name="results"
+        path="results/" />
+    <cache-path
+        name="export"
+        path="export/" />
+</paths>

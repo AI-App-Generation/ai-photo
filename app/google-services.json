@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "761347999798",
+    "project_id": "gamemode-fef31",
+    "storage_bucket": "gamemode-fef31.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761347999798:android:158f6b4bc68036a414f097",
+        "android_client_info": {
+          "package_name": "com.vezora.photo.ai.generator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbeLqbsOBMyqINQ1TOO1L5D3KrfM3tQS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

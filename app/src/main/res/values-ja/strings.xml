@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">AI Photo</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">キャンセル</string>
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
+    <string name="back">戻る</string>
+    <string name="next">次へ</string>
+    <string name="skip">スキップ</string>
+    <string name="done">完了</string>
+    <string name="save">保存</string>
+    <string name="close">閉じる</string>
+    <string name="confirm">確認</string>
+    <string name="retry">再試行</string>
+    <string name="loading">読み込み中…</string>
+    <string name="error">エラー</string>
+    <string name="error_generic">問題が発生しました。もう一度お試しください。</string>
+    <string name="home">ホーム</string>
+    <string name="settings">設定</string>
+    <string name="language">言語</string>
+
+    <string name="select_language">言語を選択</string>
+    <string name="select_region">地域を選択</string>
+
+    <!-- Entry flow: Splash / Language / Survey / Onboarding, and the Settings language row -->
+    <string name="splash_tagline">すべての写真をAIアートに</string>
+    <string name="splash_loading">AIスタジオを準備しています…</string>
+    <string name="splash_ad_notice">この操作には広告が含まれる場合があります</string>
+    <string name="loading_ad">広告を読み込んでいます。お待ちください…</string>
+    <string name="language_title">言語を選択</string>
+    <string name="language_subtitle">設定からいつでも変更できます</string>
+    <string name="region_subtitle">あなたに合った地域を選んでください</string>
+    <string name="survey_title">何を作りたいですか？</string>
+    <string name="survey_subtitle">興味のあるものをすべて選んでください。あなたに合わせてアプリを最適化します。</string>
+    <string name="survey_hint">1つ以上選択してください</string>
+    <string name="survey_selected_count">選択済み：%1$d</string>
+    <string name="survey_continue">続ける</string>
+    <string name="survey_opt_portraits">AIポートレート</string>
+    <string name="survey_opt_enhance">写真を高画質化</string>
+    <string name="survey_opt_remove_bg">背景を削除</string>
+    <string name="survey_opt_colorize">古い写真をカラー化</string>
+    <string name="survey_opt_face_swap">顔の入れ替え</string>
+    <string name="survey_opt_try_on">バーチャル試着</string>
+    <string name="onboarding_1_title">数百種類のAIスタイル</string>
+    <string name="onboarding_1_body">テンプレートを選ぶだけで、1枚の自撮りが数秒でスタジオ品質のポートレートに。</string>
+    <string name="onboarding_2_title">思い出をよみがえらせる</string>
+    <string name="onboarding_2_body">ぼやけた写真を鮮明にし、古い白黒写真をフルカラーで復元します。</string>
+    <string name="onboarding_3_title">%1$sへようこそ</string>
+    <string name="onboarding_3_body">あなただけのAIフォトスタジオの準備ができました。素敵な作品を作りましょう。</string>
+    <string name="onboarding_get_started">はじめる</string>
+    <string name="profile_language">言語</string>
+
+    <!-- Welcome back overlay -->
+    <string name="welcome_back_title">おかえりなさい！</string>
+    <string name="welcome_back_body">AIスタジオの準備ができています。前回の続きから始めましょう。</string>
+    <string name="welcome_back_continue">続ける</string>
+</resources>

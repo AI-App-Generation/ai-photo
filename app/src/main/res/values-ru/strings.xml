@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">AI Photo</string>
+
+    <string name="ok">ОК</string>
+    <string name="cancel">Отмена</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="back">Назад</string>
+    <string name="next">Далее</string>
+    <string name="skip">Пропустить</string>
+    <string name="done">Готово</string>
+    <string name="save">Сохранить</string>
+    <string name="close">Закрыть</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="retry">Повторить</string>
+    <string name="loading">Загрузка…</string>
+    <string name="error">Ошибка</string>
+    <string name="error_generic">Что-то пошло не так. Попробуйте снова.</string>
+    <string name="home">Главная</string>
+    <string name="settings">Настройки</string>
+    <string name="language">Язык</string>
+
+    <string name="select_language">Выберите язык</string>
+    <string name="select_region">Выберите регион</string>
+
+    <!-- Entry flow: Splash / Language / Survey / Onboarding, and the Settings language row -->
+    <string name="splash_tagline">Превращайте любое фото в ИИ-арт</string>
+    <string name="splash_loading">Готовим вашу ИИ-студию…</string>
+    <string name="splash_ad_notice">Это действие может содержать рекламу</string>
+    <string name="loading_ad">Загрузка рекламы, подождите…</string>
+    <string name="language_title">Выберите язык</string>
+    <string name="language_subtitle">Его можно изменить в любой момент в настройках</string>
+    <string name="region_subtitle">Выберите подходящий вам регион</string>
+    <string name="survey_title">Что вы хотите создавать?</string>
+    <string name="survey_subtitle">Выберите всё, что вам интересно, и мы настроим приложение под вас.</string>
+    <string name="survey_hint">Выберите хотя бы один вариант</string>
+    <string name="survey_selected_count">Выбрано: %1$d</string>
+    <string name="survey_continue">Продолжить</string>
+    <string name="survey_opt_portraits">ИИ-портреты</string>
+    <string name="survey_opt_enhance">Улучшение фото</string>
+    <string name="survey_opt_remove_bg">Удаление фона</string>
+    <string name="survey_opt_colorize">Раскрашивание старых фото</string>
+    <string name="survey_opt_face_swap">Замена лица</string>
+    <string name="survey_opt_try_on">Виртуальная примерка</string>
+    <string name="onboarding_1_title">Сотни ИИ-стилей</string>
+    <string name="onboarding_1_body">Выберите шаблон и превратите обычное селфи в студийный портрет за считаные секунды.</string>
+    <string name="onboarding_2_title">Верните воспоминания к жизни</string>
+    <string name="onboarding_2_body">Делайте размытые снимки чёткими и восстанавливайте старые чёрно-белые фото в цвете.</string>
+    <string name="onboarding_3_title">Добро пожаловать в %1$s</string>
+    <string name="onboarding_3_body">Ваша личная ИИ-фотостудия готова. Давайте создадим что-то потрясающее.</string>
+    <string name="onboarding_get_started">Начать</string>
+    <string name="profile_language">Язык</string>
+
+    <!-- Welcome back overlay -->
+    <string name="welcome_back_title">С возвращением!</string>
+    <string name="welcome_back_body">Ваша ИИ-студия готова. Продолжайте с того места, где остановились.</string>
+    <string name="welcome_back_continue">Продолжить</string>
+</resources>
