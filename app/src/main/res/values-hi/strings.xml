@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Photo</string>
+    <string name="app_name">Vezora</string>
 
     <string name="ok">ठीक है</string>
     <string name="cancel">रद्द करें</string>
@@ -55,4 +55,77 @@
     <string name="welcome_back_title">फिर से स्वागत है!</string>
     <string name="welcome_back_body">आपका AI स्टूडियो तैयार है। वहीं से जारी रखें जहाँ आपने छोड़ा था।</string>
     <string name="welcome_back_continue">जारी रखें</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">अनइंस्टॉल करें</string>
+    <string name="uninstall_splash_loading">बस एक पल…</string>
+    <string name="uninstall_notice_title">इतनी जल्दी जा रहे हैं?</string>
+    <string name="uninstall_notice_desc_empty">AI से आप जो कुछ भी बनाते हैं, वह इसी ऐप में रहता है।</string>
+    <string name="uninstall_notice_desc">इस डिवाइस पर %1$d रचनाएँ सहेजी हैं। अनइंस्टॉल करने पर वे हमेशा के लिए मिट जाएँगी।</string>
+    <string name="uninstall_keep_app">ऐप रखें</string>
+    <string name="uninstall_continue">अनइंस्टॉल जारी रखें</string>
+    <string name="uninstall_survey_title">आप क्यों जा रहे हैं?</string>
+    <string name="uninstall_survey_subtitle">आपका जवाब ऐप को बेहतर बनाने में हमारी मदद करता है।</string>
+    <string name="uninstall_reason_quality">नतीजे काफ़ी अच्छे नहीं हैं</string>
+    <string name="uninstall_reason_slow">बहुत समय लगता है</string>
+    <string name="uninstall_reason_ads">विज्ञापन बहुत ज़्यादा हैं</string>
+    <string name="uninstall_reason_price">यह बहुत महँगा है</string>
+    <string name="uninstall_reason_better">मुझे बेहतर ऐप मिल गया</string>
+    <string name="uninstall_reason_other">कोई और कारण</string>
+    <string name="uninstall_confirm">अनइंस्टॉल करें</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">क्रेडिट पर्याप्त नहीं हैं</string>
+    <string name="generating_error_credits_title">क्रेडिट पर्याप्त नहीं हैं</string>
+    <string name="generating_error_credits_hint">एक छवि बनाने के लिए 1 क्रेडिट चाहिए।</string>
+    <string name="credits_balance_description">%1$d क्रेडिट</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">विज्ञापन देखें</string>
+    <string name="reward_unlock_pro">PRO से अनलॉक करें</string>
+    <string name="reward_view_plans">प्लान देखें</string>
+    <string name="reward_template_title">यह PRO टेम्पलेट एक बार इस्तेमाल करें</string>
+    <string name="reward_template_message">एक छोटा विज्ञापन देखकर इस टेम्पलेट को एक बार बनाने के लिए अनलॉक करें।</string>
+    <string name="reward_tool_title">यह PRO टूल एक बार आज़माएँ</string>
+    <string name="reward_tool_message">एक छोटा विज्ञापन देखकर इस टूल को एक बार बनाने के लिए इस्तेमाल करें।</string>
+    <string name="reward_credits_title">क्रेडिट खत्म हो गए</string>
+    <string name="reward_credits_message">एक छोटा विज्ञापन देखकर 1 क्रेडिट पाएँ और बनाना जारी रखें।</string>
+    <string name="reward_save_title">वॉटरमार्क के बिना सेव करें</string>
+    <string name="reward_save_message">एक छोटा विज्ञापन देखकर इस छवि को वॉटरमार्क के बिना सेव करें, या PRO लेकर इसे हमेशा के लिए हटाएँ।</string>
+    <string name="reward_save_with_watermark">वॉटरमार्क के साथ सेव करें</string>
+    <string name="reward_ad_unavailable">अभी कोई विज्ञापन उपलब्ध नहीं है। कृपया बाद में फिर कोशिश करें।</string>
+    <string name="reward_incomplete">इनाम पाने के लिए पूरा विज्ञापन देखें।</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">ऐप में सभी विज्ञापन हटाएँ</string>
+    <string name="paywall_benefit_faster">तेज़ छवि निर्माण</string>
+    <string name="paywall_benefit_no_watermark">वॉटरमार्क हटाएँ और उच्च रिज़ॉल्यूशन में इमेज सेव करें</string>
+    <string name="paywall_benefit_premium_templates">प्रीमियम टेम्पलेट अनलॉक करें</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">Vezora PRO</string>
+    <string name="paywall_subtitle">सभी टेम्पलेट और टूल अनलॉक करें</string>
+    <string name="paywall_close">बंद करें</string>
+    <string name="paywall_continue">जारी रखें</string>
+    <string name="paywall_restore">पुनर्स्थापित करें</string>
+    <string name="paywall_terms">शर्तें</string>
+    <string name="paywall_privacy">गोपनीयता</string>
+    <string name="paywall_most_popular">सबसे लोकप्रिय</string>
+    <string name="paywall_plan_weekly">साप्ताहिक</string>
+    <string name="paywall_plan_weekly_note">आज़माएँ</string>
+    <string name="paywall_unit_weekly">प्रति सप्ताह</string>
+    <string name="paywall_plan_monthly">मासिक</string>
+    <string name="paywall_plan_monthly_note">सर्वोत्तम मूल्य</string>
+    <string name="paywall_unit_monthly">प्रति माह</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">क्रेडिट पाएँ</string>
+    <string name="credit_store_subtitle">हर इमेज जनरेशन में 1 क्रेडिट लगता है। क्रेडिट कभी समाप्त नहीं होते।</string>
+    <string name="credit_store_balance">बैलेंस: %1$d क्रेडिट</string>
+    <string name="credit_store_pack">%1$d क्रेडिट</string>
+    <string name="credit_store_best_value">सर्वोत्तम मूल्य</string>
+    <string name="credit_store_purchased">+%1$d क्रेडिट जोड़े गए</string>
+    <string name="credits_add_description">और क्रेडिट पाएँ</string>
+    <string name="reward_buy_credits">क्रेडिट पाएँ</string>
+    <string name="reward_credits_message_no_ad">आप विज्ञापन से मिलने वाला मुफ़्त क्रेडिट इस्तेमाल कर चुके हैं। बनाते रहने के लिए क्रेडिट पाएँ।</string>
 </resources>

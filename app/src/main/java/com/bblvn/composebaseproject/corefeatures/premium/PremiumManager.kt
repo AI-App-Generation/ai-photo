@@ -1,6 +1,7 @@
 package com.bblvn.composebaseproject.corefeatures.premium
 
 import com.bblvn.composebaseproject.core.SettingManager
+import com.bblvn.composebaseproject.core.AppCapability
 import com.bblvn.composebaseproject.data.domain.Template
 import com.bblvn.composebaseproject.data.domain.ToolType
 import kotlinx.coroutines.flow.StateFlow
@@ -19,17 +20,21 @@ import kotlinx.coroutines.flow.StateFlow
 object PremiumManager {
 
     /** Observe this for UI that changes with entitlement (crown chip, badges, watermark notice). */
-    val isPremium: StateFlow<Boolean> get() = SettingManager.isPurchased
+    val isPremium: StateFlow<Boolean> get() = AppCapability.isPremium
 
-    fun isPremiumNow(): Boolean = SettingManager.isPurchased.value
+    fun isPremiumNow(): Boolean = AppCapability.isPremium.value
 
     // ---- the three gates named in the spec (section 7) ----
 
     /** (a) Template Detail CTA. */
-    fun canUseTemplate(template: Template): Boolean = !template.isPremium || isPremiumNow()
+    fun canUseTemplate(template: Template): Boolean =
+        !template.isPremium || isPremiumNow() ||
+            AppCapability.hasUnlock(AppCapability.templateUnlockKey(template.id))
 
     /** (b) Tool Detail CTA — Face Swap and Virtual Try-On are premium. */
-    fun canUseTool(tool: ToolType): Boolean = !tool.isPremium || isPremiumNow()
+    fun canUseTool(tool: ToolType): Boolean =
+        !tool.isPremium || isPremiumNow() ||
+            AppCapability.hasUnlock(AppCapability.toolUnlockKey(tool.name))
 
     /** (c) The "High quality" switch in Settings. */
     fun canUseHighQuality(): Boolean = isPremiumNow()
@@ -45,6 +50,7 @@ object PremiumManager {
      * the body is what a later phase replaces with a billing call.
      */
     fun grantPremiumForTesting() {
-        SettingManager.setPurchased(true)
+        // Chỉ sống trong phiên này (biến runtime), giống một lần mua thật cho tới khi mở lại app.
+        AppCapability.setPremium(true)
     }
 }

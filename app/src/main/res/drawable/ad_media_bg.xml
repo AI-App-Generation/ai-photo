@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nền + outline bo 18dp cho MediaView / ImageView icon. Dùng cùng android:clipToOutline="true". -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/ad_elevated" />
+    <corners android:radius="18dp" />
+</shape>

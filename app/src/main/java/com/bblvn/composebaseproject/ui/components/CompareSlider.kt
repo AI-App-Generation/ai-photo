@@ -92,6 +92,8 @@ fun CompareSlider(
     revealOnFirstShow: Boolean = false,
     revealDurationMillis: Int = 900,
     onFractionChange: ((Float) -> Unit)? = null,
+    /** When set, a tap reports which side was hit (true = before) instead of moving the divider. */
+    onTapSide: ((before: Boolean) -> Unit)? = null,
     overlay: @Composable BoxScope.() -> Unit = {},
 ) {
     val anim = remember {
@@ -149,6 +151,10 @@ fun CompareSlider(
                 }
                 .pointerInput(widthPx) {
                     detectTapGestures { offset ->
+                        if (onTapSide != null) {
+                            onTapSide(offset.x / widthPx < anim.value)
+                            return@detectTapGestures
+                        }
                         scope.launch {
                             anim.animateTo(
                                 (offset.x / widthPx).coerceIn(0f, 1f),

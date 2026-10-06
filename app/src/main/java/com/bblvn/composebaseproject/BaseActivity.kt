@@ -78,7 +78,10 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private fun maybeShowWelcomeBack() {
         if (!app.shouldShowWelcomeBack.value) return
-        val show = AdsLoader.isAdsEnabled() && AdsPolicy.allowShowWelcomeBack
+        // Chỉ từ Home trở đi; quay lại khi còn ở flow đầu (Splash → Onboarding) thì bỏ qua.
+        val show = AdsLoader.isAdsEnabled() &&
+            AdsPolicy.allowShowWelcomeBack &&
+            AdsPolicy.hasReachedHome
         app.consumeWelcomeBack()
         if (show) _showWelcomeBack.value = true
     }

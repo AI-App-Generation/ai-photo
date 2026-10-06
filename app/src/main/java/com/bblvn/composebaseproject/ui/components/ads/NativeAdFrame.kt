@@ -20,6 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.bblvn.composebaseproject.ads.AdsLoader
+import com.bblvn.composebaseproject.ads.AdsPlacementHolder
 import com.bblvn.composebaseproject.ads.AdsPolicy
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.bblvn.composebaseproject.R
@@ -33,7 +34,15 @@ fun ComposeNativeAdFrame(
     @LayoutRes templateAdLayoutRes: Int = R.layout.template_ad,
     onReloadReady: (reload: (String?) -> Unit) -> Unit = {},
     reloadOnResume: Boolean = true,
+    /**
+     * Placement dùng cho lần nạp lại khi user rời app rồi quay lại (điển hình: bấm vào quảng cáo
+     * nhảy sang Store, back về). Mặc định là ô `native_reload`; truyền null để nạp lại bằng chính
+     * placement ban đầu.
+     */
+    resumePlacement: String? = AdsPlacementHolder.NATIVE_RELOAD,
     reloadIntervalMs: Long? = null,
+    /** Gọi khi một lần nạp ad thất bại (no fill, lỗi mạng…), để chỗ dùng quyết định phương án dự phòng. */
+    onAdFailed: (() -> Unit)? = null,
 ) {
     val activity = LocalActivity.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -49,6 +58,7 @@ fun ComposeNativeAdFrame(
     val isActive by AdsLoader.isActive.collectAsState()
     val placement by rememberUpdatedState(adPlacement)
     val onReloadReadyState by rememberUpdatedState(onReloadReady)
+    val onAdFailedState by rememberUpdatedState(onAdFailed)
 
     fun bindAd(root: FrameLayout, placement: String) {
         val act = activity ?: return
@@ -66,6 +76,7 @@ fun ComposeNativeAdFrame(
             onAdFailed = {
                 isBinding = false
                 if (!hasShownAd) isVisible = false
+                onAdFailedState?.invoke()
             },
             onAdLoaded = {
                 isBinding = false
@@ -101,7 +112,7 @@ fun ComposeNativeAdFrame(
                     if (isFirstResumeEvent) {
                         isFirstResumeEvent = false
                     } else if (hasLoaded && reloadOnResume) {
-                        reloadAd(null)
+                        reloadAd(resumePlacement)
                         Log.i("AdsLib", "Ad reload on resume")
                     }
                 }

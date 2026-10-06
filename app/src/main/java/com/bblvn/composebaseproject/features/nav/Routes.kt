@@ -38,6 +38,7 @@ object Routes {
     const val GENERATING = "generating"
     const val RESULT = "result?creationId={creationId}&replay={replay}"
     const val PAYWALL = "paywall"
+    const val CREDIT_STORE = "creditStore"
     const val LANGUAGE_SETTINGS = "settings/language"
 
     // --- argument keys

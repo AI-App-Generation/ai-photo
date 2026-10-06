@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Khung của template_ad_paid: skeleton CTA 48 | 12 | row 56 | 12 | media 120 = 248dp nội dung. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="260dp"
-    android:background="#121212">
+    android:background="@drawable/ad_card_bg"
+    android:padding="16dp">
 
-    <!-- ================= REAL AD ================= -->
     <FrameLayout
         android:id="@+id/frAds"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone" />
 
-    <!-- ================= SHIMMER ================= -->
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmerNative"
         android:layout_width="match_parent"
@@ -26,77 +25,63 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:orientation="vertical">
 
-            <!-- CTA -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="#33FFFFFF" />
+                android:background="@drawable/ad_skeleton_cta" />
 
-            <!-- TOP ROW -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="12dp">
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
 
-                <!-- ICON -->
                 <View
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:layout_marginEnd="12dp"
-                    android:background="#33FFFFFF" />
+                    android:background="@drawable/ad_skeleton_media" />
 
-                <!-- TEXT BLOCK -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <!-- BADGE + HEADLINE ROW -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                        <!-- BADGE -->
                         <View
-                            android:layout_width="23dp"
+                            android:layout_width="24dp"
                             android:layout_height="18dp"
-                            android:background="#33FFFFFF" />
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/ad_skeleton_badge" />
 
-                        <!-- HEADLINE (1 line fixed) -->
                         <View
                             android:layout_width="0dp"
-                            android:layout_height="18dp"
+                            android:layout_height="20dp"
                             android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            android:background="#33FFFFFF" />
+                            android:background="@drawable/ad_skeleton_line" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="32dp"
-                        android:layout_marginTop="6dp"
-                        android:background="#33FFFFFF" />
-
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/ad_skeleton_line" />
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- MEDIA -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:layout_marginTop="12dp"
-                android:background="#33FFFFFF" />
-
+                android:background="@drawable/ad_skeleton_media" />
         </LinearLayout>
-
     </com.facebook.shimmer.ShimmerFrameLayout>
-
 </FrameLayout>

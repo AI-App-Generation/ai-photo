@@ -3,6 +3,7 @@ package com.bblvn.composebaseproject.features.creations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bblvn.composebaseproject.R
+import com.bblvn.composebaseproject.core.AppCapability
 import com.bblvn.composebaseproject.core.UiEvent
 import com.bblvn.composebaseproject.core.UiText
 import com.bblvn.composebaseproject.corefeatures.generation.GenerationEngine
@@ -65,6 +66,10 @@ class CreationsViewModel : ViewModel() {
         viewModelScope.launch {
             if (GenerationEngine.isGenerating.value) {
                 _events.send(UiEvent.ShowToast(UiText.Res(R.string.creations_busy)))
+                return@launch
+            }
+            if (!AppCapability.canAffordGeneration()) {
+                _events.send(UiEvent.ShowToast(UiText.Res(R.string.credits_not_enough)))
                 return@launch
             }
             val started = GenerationEngine.regenerate(creation)

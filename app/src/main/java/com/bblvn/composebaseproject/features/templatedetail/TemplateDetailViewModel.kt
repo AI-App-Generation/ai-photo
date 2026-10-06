@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.features.templatedetail
 
+import com.bblvn.composebaseproject.core.AppCapability
 import androidx.lifecycle.viewModelScope
 import com.bblvn.composebaseproject.core.StateViewModel
 import com.bblvn.composebaseproject.core.UiText
@@ -48,6 +49,8 @@ data class TemplateDetailUiState(
     /** Mirrors [GenerationDraft.Draft.slots]; index == Seedream `image[]` index (Risks #17). */
     val slots: List<String?> = listOf(null, null),
     val isPremiumUser: Boolean = false,
+    /** Lượt mở khoá một lần còn lại (xem AppCapability); có lượt cho template này thì hết bị khoá. */
+    val unlockPasses: List<String> = emptyList(),
     val isGeneratingElsewhere: Boolean = false,
     val isLoading: Boolean = true,
     val descriptionExpanded: Boolean = false,
@@ -62,7 +65,9 @@ data class TemplateDetailUiState(
     val hasAllPhotos: Boolean
         get() = (0 until requiredSlots).all { !slots.getOrNull(it).isNullOrBlank() }
 
-    val isLocked: Boolean get() = template != null && template.isPremium && !isPremiumUser
+    val isLocked: Boolean
+        get() = template != null && template.isPremium && !isPremiumUser &&
+            AppCapability.templateUnlockKey(template.id) !in unlockPasses
 
     val ctaState: TemplateCtaState
         get() = when {
@@ -93,6 +98,11 @@ class TemplateDetailViewModel : StateViewModel<TemplateDetailUiState>(TemplateDe
         viewModelScope.launch {
             PremiumManager.isPremium.collectLatest { premium ->
                 update { it.copy(isPremiumUser = premium) }
+            }
+        }
+        viewModelScope.launch {
+            AppCapability.unlockPasses.collectLatest { passes ->
+                update { it.copy(unlockPasses = passes) }
             }
         }
         viewModelScope.launch {

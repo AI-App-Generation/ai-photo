@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Photo</string>
+    <string name="app_name">Vezora</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Abbrechen</string>
@@ -55,4 +55,77 @@
     <string name="welcome_back_title">Willkommen zurück!</string>
     <string name="welcome_back_body">Dein KI-Studio ist bereit. Mach genau dort weiter, wo du aufgehört hast.</string>
     <string name="welcome_back_continue">Weiter</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">Deinstallieren</string>
+    <string name="uninstall_splash_loading">Einen Moment…</string>
+    <string name="uninstall_notice_title">Schon am Gehen?</string>
+    <string name="uninstall_notice_desc_empty">Alles, was du mit KI erstellst, befindet sich in dieser App.</string>
+    <string name="uninstall_notice_desc">Du hast %1$d Kreationen auf diesem Gerät gespeichert. Beim Deinstallieren werden sie endgültig gelöscht.</string>
+    <string name="uninstall_keep_app">App behalten</string>
+    <string name="uninstall_continue">Weiter deinstallieren</string>
+    <string name="uninstall_survey_title">Warum gehst du?</string>
+    <string name="uninstall_survey_subtitle">Deine Antwort hilft uns, die App zu verbessern.</string>
+    <string name="uninstall_reason_quality">Die Ergebnisse sind nicht gut genug</string>
+    <string name="uninstall_reason_slow">Es dauert zu lange</string>
+    <string name="uninstall_reason_ads">Zu viel Werbung</string>
+    <string name="uninstall_reason_price">Es ist zu teuer</string>
+    <string name="uninstall_reason_better">Ich habe eine bessere App gefunden</string>
+    <string name="uninstall_reason_other">Etwas anderes</string>
+    <string name="uninstall_confirm">Deinstallieren</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">Nicht genug Credits</string>
+    <string name="generating_error_credits_title">Nicht genug Credits</string>
+    <string name="generating_error_credits_hint">Du brauchst 1 Credit, um ein Bild zu erstellen.</string>
+    <string name="credits_balance_description">%1$d Credits</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">Werbung ansehen</string>
+    <string name="reward_unlock_pro">Mit PRO freischalten</string>
+    <string name="reward_view_plans">Pläne ansehen</string>
+    <string name="reward_template_title">Diese PRO-Vorlage einmal nutzen</string>
+    <string name="reward_template_message">Sieh dir eine kurze Werbung an, um diese Vorlage für eine Kreation freizuschalten.</string>
+    <string name="reward_tool_title">Dieses PRO-Tool einmal testen</string>
+    <string name="reward_tool_message">Sieh dir eine kurze Werbung an, um dieses Tool für eine Kreation zu nutzen.</string>
+    <string name="reward_credits_title">Keine Credits mehr</string>
+    <string name="reward_credits_message">Sieh dir eine kurze Werbung an, um 1 Credit zu verdienen und weiterzumachen.</string>
+    <string name="reward_save_title">Ohne Wasserzeichen speichern</string>
+    <string name="reward_save_message">Sieh dir eine kurze Werbung an, um dieses Bild ohne Wasserzeichen zu speichern, oder wechsle zu PRO, um es dauerhaft zu entfernen.</string>
+    <string name="reward_save_with_watermark">Mit Wasserzeichen speichern</string>
+    <string name="reward_ad_unavailable">Derzeit ist keine Werbung verfügbar. Bitte versuche es später erneut.</string>
+    <string name="reward_incomplete">Sieh dir die ganze Werbung an, um die Belohnung zu erhalten.</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">Alle Werbung in der App entfernen</string>
+    <string name="paywall_benefit_faster">Schnellere Bilderstellung</string>
+    <string name="paywall_benefit_no_watermark">Wasserzeichen entfernen und Bilder in hoher Auflösung speichern</string>
+    <string name="paywall_benefit_premium_templates">Premium-Vorlagen freischalten</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">Vezora PRO</string>
+    <string name="paywall_subtitle">Alle Vorlagen und Tools freischalten</string>
+    <string name="paywall_close">Schließen</string>
+    <string name="paywall_continue">Weiter</string>
+    <string name="paywall_restore">Wiederherstellen</string>
+    <string name="paywall_terms">Bedingungen</string>
+    <string name="paywall_privacy">Datenschutz</string>
+    <string name="paywall_most_popular">AM BELIEBTESTEN</string>
+    <string name="paywall_plan_weekly">Wöchentlich</string>
+    <string name="paywall_plan_weekly_note">Zum Ausprobieren</string>
+    <string name="paywall_unit_weekly">pro Woche</string>
+    <string name="paywall_plan_monthly">Monatlich</string>
+    <string name="paywall_plan_monthly_note">Bestes Angebot</string>
+    <string name="paywall_unit_monthly">pro Monat</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">Credits holen</string>
+    <string name="credit_store_subtitle">Jede Bilderstellung kostet 1 Credit. Credits verfallen nie.</string>
+    <string name="credit_store_balance">Guthaben: %1$d Credits</string>
+    <string name="credit_store_pack">%1$d Credits</string>
+    <string name="credit_store_best_value">BESTES ANGEBOT</string>
+    <string name="credit_store_purchased">+%1$d Credits hinzugefügt</string>
+    <string name="credits_add_description">Mehr Credits holen</string>
+    <string name="reward_buy_credits">Credits holen</string>
+    <string name="reward_credits_message_no_ad">Du hast deinen Gratis-Credit per Werbung bereits genutzt. Hol dir Credits, um weiterzumachen.</string>
 </resources>

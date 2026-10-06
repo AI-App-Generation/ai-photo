@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.features.survey
 
+import com.bblvn.composebaseproject.core.Analytics
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
@@ -53,7 +54,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bblvn.composebaseproject.LogScreenView
 import com.bblvn.composebaseproject.R
+import com.bblvn.composebaseproject.ads.AdsPlacementHolder
 import com.bblvn.composebaseproject.ui.components.PrimaryButton
+import com.bblvn.composebaseproject.ui.components.ads.ComposeNativeAdFrame
 import com.bblvn.composebaseproject.ui.components.SelectionIndicator
 import com.bblvn.composebaseproject.ui.components.TopHalo
 import com.bblvn.composebaseproject.ui.theme.AppColors
@@ -88,10 +91,12 @@ private enum class SurveyOption(
  */
 @Composable
 fun SurveyScreen(onNext: () -> Unit = {}) {
-    LogScreenView("Survey")
+    LogScreenView("survey_view")
 
     // Enum names so the selection survives process death via rememberSaveable.
     var selected by rememberSaveable { mutableStateOf(listOf<String>()) }
+    var hasReloadedAd by remember { mutableStateOf(false) }
+    var reloadNativeAd by remember { mutableStateOf<(String?) -> Unit>({}) }
 
     Box(
         modifier = Modifier
@@ -138,6 +143,11 @@ fun SurveyScreen(onNext: () -> Unit = {}) {
                                         } else {
                                             selected + option.name
                                         }
+                                        // Chỉ nạp đè một lần, ở lần chạm đầu tiên.
+                                        if (!hasReloadedAd && selected.isNotEmpty()) {
+                                            hasReloadedAd = true
+                                            reloadNativeAd(AdsPlacementHolder.NATIVE_ONB1_CLICK)
+                                        }
                                     },
                                 )
                             }
@@ -165,7 +175,6 @@ fun SurveyScreen(onNext: () -> Unit = {}) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .navigationBarsPadding()
                     .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -188,9 +197,27 @@ fun SurveyScreen(onNext: () -> Unit = {}) {
                 PrimaryButton(
                     text = stringResource(R.string.survey_continue),
                     enabled = selected.isNotEmpty(),
-                    onClick = onNext,
+                    onClick = {
+                        // Bắn ngay khi bấm, TRƯỚC khi chen quảng cáo — đặt sau thì lần nào quảng
+                        // cáo nuốt luồng là mất số liệu khảo sát. Khảo sát chọn nhiều nên gửi kèm
+                        // `count`: chuỗi nối không tách được trong Firebase.
+                        Analytics.log(
+                            "survey_continue",
+                            "interests" to selected.joinToString(",") { it.lowercase() },
+                            "count" to selected.size,
+                        )
+                        onNext()
+                    },
                 )
             }
+
+            // native_onb1 hiện sẵn; lần chạm đầu tiên nạp đè sang native_onb1_click.
+            ComposeNativeAdFrame(
+                modifier = Modifier.fillMaxWidth(),
+                adPlacement = AdsPlacementHolder.NATIVE_ONB1,
+                onReloadReady = { reloadNativeAd = it },
+            )
+            Spacer(Modifier.navigationBarsPadding())
         }
     }
 }

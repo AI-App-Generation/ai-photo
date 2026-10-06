@@ -35,6 +35,7 @@ fun FailureReason.titleRes(): Int = when (this) {
     FailureReason.NO_FACE_DETECTED -> R.string.generating_error_no_face_title
     FailureReason.STORAGE_FULL -> R.string.generating_error_storage_title
     FailureReason.INTERRUPTED -> R.string.generating_error_interrupted_title
+    FailureReason.INSUFFICIENT_CREDITS -> R.string.generating_error_credits_title
     FailureReason.UNKNOWN -> R.string.generating_error_unknown_title
 }
 
@@ -48,6 +49,7 @@ fun FailureReason.hintRes(): Int = when (this) {
     FailureReason.NO_FACE_DETECTED -> R.string.generating_error_no_face_hint
     FailureReason.STORAGE_FULL -> R.string.generating_error_storage_hint
     FailureReason.INTERRUPTED -> R.string.generating_error_interrupted_hint
+    FailureReason.INSUFFICIENT_CREDITS -> R.string.generating_error_credits_hint
     FailureReason.UNKNOWN -> R.string.generating_error_unknown_hint
 }
 
@@ -202,7 +204,8 @@ class GeneratingViewModel : StateViewModel<GeneratingUiState>(GeneratingUiState(
             it.copy(
                 failure = state.reason,
                 failureDetail = state.detail?.takeIf { _ -> BuildConfig.DEBUG },
-                canRetry = true,
+                // Hết credit thì thử lại cũng vẫn hết; chỉ còn cách quay lại.
+                canRetry = state.reason != FailureReason.INSUFFICIENT_CREDITS,
             )
         }
     }

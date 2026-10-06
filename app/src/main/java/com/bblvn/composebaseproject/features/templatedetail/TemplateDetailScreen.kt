@@ -10,8 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import com.bblvn.composebaseproject.ui.components.ads.ComposeNativeAdFrame
+import com.bblvn.composebaseproject.ads.AdsPlacementHolder
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,12 +25,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bblvn.composebaseproject.R
+import com.bblvn.composebaseproject.core.AppCapability
 import com.bblvn.composebaseproject.data.domain.Template
 import com.bblvn.composebaseproject.ui.components.AppIconButton
+import com.bblvn.composebaseproject.ui.components.AppToast
 import com.bblvn.composebaseproject.ui.components.BottomCtaBar
 import com.bblvn.composebaseproject.ui.components.ButtonVariant
 import com.bblvn.composebaseproject.ui.components.EmptyState
 import com.bblvn.composebaseproject.ui.components.PrimaryButton
+import com.bblvn.composebaseproject.ui.components.RewardPrompt
+import com.bblvn.composebaseproject.ui.components.RewardKind
 import com.bblvn.composebaseproject.ui.components.ShimmerBox
 import com.bblvn.composebaseproject.ui.theme.AppColors
 import com.bblvn.composebaseproject.ui.theme.AppShapes
@@ -55,6 +64,10 @@ fun TemplateDetailScreen(
     val state by vm.state.collectAsState()
     val template = state.template
 
+    // Dialog "xem quảng cáo thưởng hoặc mở paywall": hiện khi template bị khoá PRO, hoặc khi hết
+    // credit ở nút bắt đầu (chặn từ sớm, trước khi sang Adjust / chọn ảnh).
+    var rewardKind by remember { mutableStateOf<RewardKind?>(null) }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -73,6 +86,8 @@ fun TemplateDetailScreen(
                 onStart = onStart,
                 onOpenPaywall = onOpenPaywall,
                 onTemplateClick = onTemplateClick,
+                onNeedCredits = { rewardKind = RewardKind.Credits },
+                onNeedUnlock = { rewardKind = RewardKind.UnlockTemplate },
             )
 
             state.isLoading -> TemplateDetailSkeleton()
@@ -97,6 +112,24 @@ fun TemplateDetailScreen(
             background = Color.Black.copy(alpha = 0.35f),
             onClick = onBack,
         )
+
+        RewardPrompt(
+            kind = rewardKind,
+            onGranted = { kind ->
+                when (kind) {
+                    // Cộng một lượt mở khoá cho template này; nút khoá tự đổi thành nút bắt đầu.
+                    RewardKind.UnlockTemplate ->
+                        AppCapability.grantUnlock(AppCapability.templateUnlockKey(templateId))
+                    RewardKind.Credits -> AppCapability.grantRewardedCredits()
+                    else -> Unit
+                }
+            },
+            onOpenPaywall = {
+                rewardKind = null
+                onOpenPaywall()
+            },
+            onDismiss = { rewardKind = null },
+        )
     }
 }
 
@@ -110,6 +143,8 @@ private fun androidx.compose.foundation.layout.BoxScope.TemplateDetailContent(
     onStart: () -> Unit,
     onOpenPaywall: () -> Unit,
     onTemplateClick: (String) -> Unit,
+    onNeedCredits: () -> Unit,
+    onNeedUnlock: () -> Unit,
 ) {
     val description = templateDescription(template, state.categoryName)
 
@@ -123,6 +158,18 @@ private fun androidx.compose.foundation.layout.BoxScope.TemplateDetailContent(
                 description = description,
                 expanded = state.descriptionExpanded,
                 onToggleExpand = onToggleDescription,
+                showProBadge = state.isLocked,
+            )
+        }
+
+        // native_template_detail: dưới đoạn mô tả, trên khối "Cùng phong cách". Ô tự ẩn khi không có ad.
+        item(key = "ad_native") {
+            ComposeNativeAdFrame(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                layoutResId = R.layout.frame_ad_inline,
+                adPlacement = AdsPlacementHolder.NATIVE_TEMPLATE_DETAIL,
             )
         }
 
@@ -153,6 +200,8 @@ private fun androidx.compose.foundation.layout.BoxScope.TemplateDetailContent(
         onPickPhoto = onPickPhoto,
         onStart = onStart,
         onOpenPaywall = onOpenPaywall,
+        onNeedCredits = onNeedCredits,
+        onNeedUnlock = onNeedUnlock,
     )
 }
 
@@ -167,6 +216,8 @@ private fun TemplateDetailCta(
     onPickPhoto: (Int) -> Unit,
     onStart: () -> Unit,
     onOpenPaywall: () -> Unit,
+    onNeedCredits: () -> Unit,
+    onNeedUnlock: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val cta = state.ctaState
@@ -190,13 +241,23 @@ private fun TemplateDetailCta(
             icon = icon,
             enabled = cta != TemplateCtaState.Busy && cta != TemplateCtaState.NeedsPhotos,
             variant = if (cta == TemplateCtaState.Locked) ButtonVariant.Gold else ButtonVariant.Brand,
+            // Giá 1 credit hiện trên mọi nút dẫn tới tạo ảnh; nút khoá PRO / đang bận thì không có giá.
+            cost = when (cta) {
+                TemplateCtaState.Ready, TemplateCtaState.PickPhoto, TemplateCtaState.NeedsPhotos ->
+                    AppCapability.COST_PER_GENERATION
+                TemplateCtaState.Locked, TemplateCtaState.Busy -> null
+            },
             onClick = {
                 when (cta) {
-                    TemplateCtaState.Locked -> onOpenPaywall()
+                    // Template PRO: mở dialog "Watch ad" / "Unlock with PRO" thay vì nhảy thẳng sang paywall.
+                    TemplateCtaState.Locked -> onNeedUnlock()
                     // One-image template with nothing picked: the single-select picker comes
-                    // first, and the CTA then proceeds to the Adjust step (R5).
-                    TemplateCtaState.PickPhoto -> onPickPhoto(0)
-                    TemplateCtaState.Ready -> onStart()
+                    // first, and the CTA then proceeds to the Adjust step (R5). Hết credit thì chặn
+                    // luôn ở đây, đừng để user chọn ảnh xong mới biết không tạo được.
+                    TemplateCtaState.PickPhoto ->
+                        if (AppCapability.canAffordGeneration()) onPickPhoto(0) else onNeedCredits()
+                    TemplateCtaState.Ready ->
+                        if (AppCapability.canAffordGeneration()) onStart() else onNeedCredits()
                     TemplateCtaState.Busy, TemplateCtaState.NeedsPhotos -> Unit
                 }
             },

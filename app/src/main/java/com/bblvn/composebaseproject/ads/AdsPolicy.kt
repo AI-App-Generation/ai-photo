@@ -67,6 +67,18 @@ object AdModeManager {
     }
 }
 
+/** Kết cục của một lần gọi [AdsPolicy.showInterAd]. */
+enum class InterAdOutcome {
+    /** Không hiện (ads tắt, mode 0, đang trong giãn cách, hoặc bỏ qua theo luật mode 2). */
+    SKIPPED,
+
+    /** Có thử hiện nhưng nạp/hiện lỗi. */
+    FAILED,
+
+    /** Đã hiện và user đã đóng. */
+    CLOSED,
+}
+
 object AdsPolicy {
     private const val INTERVAL = 30_000L
 
@@ -78,6 +90,14 @@ object AdsPolicy {
 
     @Volatile
     var allowShowWelcomeBack = true
+
+    /**
+     * Đã vào tới Home trong phiên này chưa. Màn Welcome Back (và ad đính kèm) chỉ chạy từ Home trở
+     * đi: thoát app rồi quay lại khi còn ở Splash / Language / Survey / Onboarding thì không hiện.
+     * Cố ý không lưu xuống đĩa — mỗi lần mở app lại phải đi qua flow đầu rồi mới tới Home.
+     */
+    @Volatile
+    var hasReachedHome = false
 
     @Volatile
     var isShowingInterAd = false
@@ -99,7 +119,9 @@ object AdsPolicy {
     private fun resolvePlacement(placement: String): String {
         if (SettingManager.isFirstTime.value) return placement
         return when (placement) {
-//            AdsPlacementHolder.INTER_SPLASH -> AdsPlacementHolder.INTER_SPLASH_2ND
+            AdsPlacementHolder.INTER_SPLASH -> AdsPlacementHolder.INTER_SPLASH_2ND
+            AdsPlacementHolder.NATIVE_LFO1 -> AdsPlacementHolder.NATIVE_LFO1_2ND
+            AdsPlacementHolder.NATIVE_LFO2 -> AdsPlacementHolder.NATIVE_LFO2_2ND
             else -> placement
         }
     }
@@ -123,31 +145,57 @@ object AdsPolicy {
         return false
     }
 
+    /**
+     * Quảng cáo thưởng.
+     *
+     * Ba kết cục tách bạch, vì hệ quả của chúng trái ngược nhau:
+     *  - [onRewardGranted] xem hết, đáng được thưởng.
+     *  - [onAdFailed] không hiện nổi (hết fill, remote config tắt) — lỗi của ta, không thưởng gì.
+     *  - [onDismissedWithoutReward] user tự đóng giữa chừng — KHÔNG thưởng, nếu không thì mở lên
+     *    đóng ngay là có quà và chẳng ai xem hết quảng cáo nữa.
+     */
     fun showRewardAd(
         activity: Activity,
         adPlacement: String,
         onRewardGranted: () -> Unit,
+        onAdFailed: () -> Unit = {},
+        onDismissedWithoutReward: () -> Unit = {},
     ) {
+        val placement = resolvePlacement(adPlacement)
+        if (!AdModeManager.isEnabled(placement)) {
+            onAdFailed()
+            return
+        }
+
         setShowingInter(true)
         setWaitingInterAd(true)
-        AdsManager.getInstance().loadAndShow(activity, adPlacement, object : AdCallback {
-            override fun onAdLoaded(name: String) {
-                super.onAdLoaded(name)
-                setWaitingInterAd(false)
-            }
-            override fun onRewardGranted(name: String) {
-                super.onRewardGranted(name)
-                Log.e("AdsLib", "$adPlacement: granted")
-                onRewardGranted()
 
+        AdsManager.getInstance().loadAndShow(activity, placement, object : AdCallback {
+            // SDK bắn onAdClosed cả sau khi đã thưởng và sau khi lỗi, nên phải lọc để chỉ kết cục
+            // ĐẦU TIÊN được tính. Callback đều về main thread nên một cờ thường là đủ.
+            private var settled = false
+
+            /**
+             * Dọn cờ rồi mới lọc: cờ phải sạch kể cả ở lần gọi thừa.
+             * Bỏ sót đúng chỗ này là kẹt [isShowingInterAd] và chết cả màn Welcome Back.
+             */
+            private fun settle(outcome: () -> Unit) {
                 setWaitingInterAd(false)
                 setShowingInter(false)
+                if (settled) return
+                settled = true
+                outcome()
             }
+
+            override fun onAdLoaded(name: String) = setWaitingInterAd(false)
+
+            override fun onRewardGranted(name: String) = settle(onRewardGranted)
+
+            override fun onAdClosed(name: String) = settle(onDismissedWithoutReward)
+
             override fun onAdFailed(name: String, error: String) {
-                Log.e("AdsLib", "$adPlacement: $error")
-
-                setWaitingInterAd(false)
-                setShowingInter(false)
+                Log.e("AdsLib", "$placement: $error")
+                settle(onAdFailed)
             }
         })
     }
@@ -159,21 +207,24 @@ object AdsPolicy {
         delayTime: Long = 0,
         force: Boolean = false, // Show ngay lập tức, không áp dụng luật bên dưới
         showWaitingOverlay: Boolean = true,
+        /** Gọi ngay trước [onContinue], cho biết inter có thật sự hiện và đóng hay không. */
+        onOutcome: ((InterAdOutcome) -> Unit)? = null,
     ) {
         val hasContinued = AtomicBoolean(false)
-        val continueOnce = {
+        val continueOnce = { outcome: InterAdOutcome ->
             if (hasContinued.compareAndSet(false, true)) {
+                onOutcome?.invoke(outcome)
                 onContinue()
             }
         }
 
-        if (skipIfAdsInactive { continueOnce() }) return
+        if (skipIfAdsInactive { continueOnce(InterAdOutcome.SKIPPED) }) return
 
         val placement = resolvePlacement(adPlacement)
 
         val mode = AdModeManager.getMode(placement)
         if (mode == 0) {
-            continueOnce()
+            continueOnce(InterAdOutcome.SKIPPED)
             return
         }
 
@@ -181,14 +232,14 @@ object AdsPolicy {
             when (mode) {
                 1 -> {
                     if (!canShowInterAd()) {
-                        continueOnce()
+                        continueOnce(InterAdOutcome.SKIPPED)
                         return
                     }
                 }
                 2 -> {
                     runtimeInterCount++
                     if (runtimeInterCount % 2 != 1) {
-                        continueOnce()
+                        continueOnce(InterAdOutcome.SKIPPED)
                         return
                     }
                 }
@@ -216,7 +267,7 @@ object AdsPolicy {
                         if (showWaitingOverlay) setWaitingInterAd(false)
                         setShowingInter(false)
                         Log.e("AdsLib", "$placement: $error")
-                        continueOnce()
+                        continueOnce(InterAdOutcome.FAILED)
                         loadNextAd(placement)
                     }
 
@@ -224,7 +275,7 @@ object AdsPolicy {
                         if (showWaitingOverlay) setWaitingInterAd(false)
                         setShowingInter(false)
                         Log.i("AdsLib", "$placement closed")
-                        continueOnce()
+                        continueOnce(InterAdOutcome.CLOSED)
                     }
 
                     override fun onAdImpression(name: String) {
@@ -246,7 +297,7 @@ object AdsPolicy {
     ) {
         showInterAd(
             activity = activity,
-            adPlacement = AdsPlacementHolder.APP_OPEN,
+            adPlacement = AdsPlacementHolder.APP_OPEN_RESUME,
             onContinue = onContinue,
             delayTime = delayTime,
             force = true,
@@ -366,6 +417,16 @@ object AdsPolicy {
         )
     }
 
+    /**
+     * Nạp trước các ad của màn Welcome Back ngay lúc app bị đẩy xuống nền, để khi user quay lại
+     * chúng đã sẵn sàng. Chỉ nạp khi màn đó có thể hiện (đã tới Home, không bị chặn).
+     */
+    fun preloadWelcomeBack() {
+        if (!AdsLoader.isAdsEnabled() || !hasReachedHome || !allowShowWelcomeBack) return
+        loadAd(AdsPlacementHolder.NATIVE_RESUME)
+        loadAd(AdsPlacementHolder.INTER_WELCOME_BACK)
+    }
+
     fun loadAd(adPlacement: String) {
         if (!AdsLoader.isAdsEnabled()) return
         val placement = resolvePlacement(adPlacement)
@@ -381,13 +442,52 @@ object AdsPolicy {
             }
         })
     }
-    fun loadNextAd(adPlacement: String) {
+    /**
+     * Nạp trước các inter dùng chung giãn cách 30s (đổi tab, mở template, mở tool) ngay khi tới Home,
+     * để lần bấm đầu tiên không phải chờ nạp.
+     */
+    fun preloadHomeInters() {
         if (!AdsLoader.isAdsEnabled()) return
-        
+        loadAd(AdsPlacementHolder.INTER_TAB)
+        loadAd(AdsPlacementHolder.INTER_OPEN_TEMPLATE)
+        loadAd(AdsPlacementHolder.INTER_OPEN_TOOL)
     }
 
+    fun loadNextAd(adPlacement: String) {
+        if (!AdsLoader.isAdsEnabled()) return
+
+        // Sau inter_tab là native_full_inter: nạp sẵn để chuỗi không bị khựng.
+        if (adPlacement == AdsPlacementHolder.INTER_TAB) loadAd(AdsPlacementHolder.NATIVE_FULL_INTER)
+
+        if (adPlacement == AdsPlacementHolder.INTER_SPLASH || adPlacement == AdsPlacementHolder.INTER_SPLASH_2ND) {
+            loadAd(AdsPlacementHolder.NATIVE_LFO1)
+            loadAd(AdsPlacementHolder.NATIVE_LANGUAGE_SMALL)
+        }
+    }
+
+    /** [adPlacement] đã qua [resolvePlacement], nên phải so cả bản `_2nd`. */
     fun preloadAfterShowNativeAd(adPlacement: String) {
         if (!AdsLoader.isAdsEnabled()) return
 
+        if (adPlacement == AdsPlacementHolder.NATIVE_LFO1 || adPlacement == AdsPlacementHolder.NATIVE_LFO1_2ND) {
+            loadAd(AdsPlacementHolder.NATIVE_LFO2)
+        }
+        if (adPlacement == AdsPlacementHolder.NATIVE_LFO2 || adPlacement == AdsPlacementHolder.NATIVE_LFO2_2ND) {
+            loadAd(AdsPlacementHolder.NATIVE_RG1)
+            loadAd(AdsPlacementHolder.NATIVE_ONB1)
+        }
+        if (adPlacement == AdsPlacementHolder.NATIVE_RG1) loadAd(AdsPlacementHolder.NATIVE_RG2)
+
+        // Survey xong thì tới onboarding: nạp trước toàn bộ ô của chặng đó.
+        if (adPlacement == AdsPlacementHolder.NATIVE_ONB1) loadAd(AdsPlacementHolder.NATIVE_ONB1_CLICK)
+        if (adPlacement == AdsPlacementHolder.NATIVE_ONB1_CLICK) {
+            loadAd(AdsPlacementHolder.NATIVE_ONB2)
+            loadAd(AdsPlacementHolder.NATIVE_FULL_OB_2)
+            loadAd(AdsPlacementHolder.NATIVE_ONB3)
+            loadAd(AdsPlacementHolder.NATIVE_FULL_OB_3)
+            loadAd(AdsPlacementHolder.NATIVE_WELCOME)
+        }
+        // Splash: nạp trước native full sẽ chen sau inter.
+        if (adPlacement == AdsPlacementHolder.NATIVE_SPLASH) loadAd(AdsPlacementHolder.NATIVE_FULL_SPLASH)
     }
 }

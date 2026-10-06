@@ -1,106 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Giống template_ad nhưng CTA gọn, căn phải (min 120dp). Cao đúng 248dp nội dung như template_ad;
+    khung tương ứng là frame_ad_meta.xml.
+-->
 <com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="#121212"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- MEDIA (TOP) -->
         <com.google.android.libraries.ads.mobile.sdk.nativead.MediaView
             android:id="@+id/ad_media"
             android:layout_width="match_parent"
-            android:layout_height="120dp" />
+            android:layout_height="120dp"
+            android:background="@drawable/ad_media_bg"
+            android:clipToOutline="true" />
 
-        <!-- CONTENT ROW -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="12dp">
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
 
-            <!-- ICON -->
             <ImageView
                 android:id="@+id/ad_app_icon"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:layout_marginEnd="12dp"
+                android:background="@drawable/ad_media_bg"
+                android:clipToOutline="true"
+                android:contentDescription="@null"
                 android:scaleType="centerCrop" />
 
-            <!-- TEXT -->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <!-- BADGE + HEADLINE -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:layout_height="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/ad_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="24dp"
+                        android:layout_height="18dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/ad_badge_bg"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
                         android:text="Ad"
+                        android:textColor="@color/ad_text_primary"
                         android:textSize="10sp"
-                        android:textColor="@android:color/white"
-                        android:background="#33FFFFFF"
-                        android:paddingHorizontal="6dp"
-                        android:paddingVertical="2dp"
-                        android:layout_marginEnd="8dp"/>
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/ad_headline"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="20dp"
                         android:layout_weight="1"
-                        android:maxLines="1"
                         android:ellipsize="end"
-                        android:singleLine="true"
-                        android:textColor="@android:color/white"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textColor="@color/ad_text_primary"
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- BODY (always 2 lines) -->
                 <TextView
                     android:id="@+id/ad_body"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:maxLines="2"
-                    android:minLines="2"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="4dp"
                     android:ellipsize="end"
-                    android:textColor="#B3FFFFFF"
-                    android:textSize="12sp"
-                    android:layout_marginTop="4dp" />
+                    android:includeFontPadding="false"
+                    android:lineSpacingExtra="2dp"
+                    android:maxLines="2"
+                    android:textColor="@color/ad_text_secondary"
+                    android:textSize="12sp" />
             </LinearLayout>
-
         </LinearLayout>
 
-        <!-- CTA (BOTTOM) -->
         <Button
             android:id="@+id/ad_call_to_action"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_marginTop="12dp"
             android:layout_gravity="end"
-            android:minWidth="120dp"
-            android:paddingHorizontal="20dp"
-            android:text="INSTALL"
-            android:textAllCaps="true"
-            android:textColor="@android:color/black"
+            android:layout_marginTop="12dp"
             android:background="@drawable/primary_cta"
-            android:backgroundTint="@null" />
-
+            android:backgroundTint="@null"
+            android:minWidth="120dp"
+            android:minHeight="0dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="0dp"
+            android:stateListAnimator="@null"
+            android:text="Install"
+            android:textAllCaps="false"
+            android:textColor="@color/ad_text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold" />
     </LinearLayout>
-
 </com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdView>

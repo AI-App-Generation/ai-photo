@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.features.onboarding
 
+import com.bblvn.composebaseproject.core.AppCapability
 import android.app.Activity
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.Animatable
@@ -60,7 +61,8 @@ import com.bblvn.composebaseproject.R
 import com.bblvn.composebaseproject.ads.AdsLoader
 import com.bblvn.composebaseproject.ads.AdsPlacementHolder
 import com.bblvn.composebaseproject.ads.AdsPolicy
-import com.bblvn.composebaseproject.ui.components.ads.AdBanner
+import com.bblvn.composebaseproject.ui.components.ads.ComposeNativeAdFrame
+import com.bblvn.composebaseproject.ui.components.ads.NativeAdOverlay
 import com.bblvn.composebaseproject.ui.theme.AppColors
 import com.bblvn.composebaseproject.ui.theme.AppGradients
 import com.bblvn.composebaseproject.ui.theme.AppShapes
@@ -69,30 +71,58 @@ import com.bblvn.composebaseproject.ui.theme.dropShadow
 import com.bblvn.composebaseproject.ui.theme.glowBrand
 import com.bblvn.composebaseproject.ui.theme.rootScrim
 import kotlinx.coroutines.delay
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.roundToInt
 
 private const val LOADING_PROGRESS_ANIMATION_MS = 1200
 
 @Composable
-fun SplashScreen(onNext: () -> Unit = {}) {
-    LogScreenView("Splash")
+fun SplashScreen(onNext: () -> Unit = {}, onPremiumReady: () -> Unit = onNext) {
+    LogScreenView("splash_view")
 
     val activity = LocalActivity.current as Activity
 
     val ready by AdsLoader.finished.collectAsState()
+    val isPremium by AppCapability.isPremium.collectAsState()
     var progressComplete by remember { mutableStateOf(false) }
+    var showNativeFull by remember { mutableStateOf(false) }
 
-    LaunchedEffect(ready) {
+    // Rời Splash đúng MỘT lần.
+    //
+    // Cần chốt này vì có hai đường ra chạy song song: nhánh premium ở effect bên dưới, và callback
+    // của quảng cáo mở màn. Nếu quyền trả phí về ĐÚNG LÚC quảng cáo đang hiển thị thì effect chạy
+    // lại, đẩy user vào Main, rồi lát sau quảng cáo đóng lại gọi onNext và ném họ ngược về màn chọn
+    // ngôn ngữ. Ai tới trước thì thắng, người sau bị chặn.
+    val hasLeft = remember { AtomicBoolean(false) }
+    val leaveOnce: (() -> Unit) -> Unit = { go -> if (hasLeft.compareAndSet(false, true)) go() }
+    // Inter đóng, native full đóng và native full lỗi đều dẫn tới onNext.
+    val leave: () -> Unit = { leaveOnce(onNext) }
+
+    // Theo dõi cả isPremium chứ không chỉ ready: quyền trả phí đến từ Google Play nên có thể về muộn
+    // hơn AdsLoader một nhịp; khi nó lật, effect chạy lại và user vẫn kịp đi đường tắt.
+    LaunchedEffect(ready, isPremium) {
         if (!ready) return@LaunchedEffect
 
         progressComplete = true
+
+        // Cả chặng Language / Survey / Onboarding đều là phễu quảng cáo. Bắt người vừa trả tiền để
+        // không xem quảng cáo đi hết phễu đó là chuyện vô nghĩa nhất có thể làm với họ.
+        if (isPremium) {
+            leaveOnce(onPremiumReady)
+            return@LaunchedEffect
+        }
+
         delay(LOADING_PROGRESS_ANIMATION_MS + 1500L)
 
+        // inter_splash; từ lần mở thứ 2 AdsPolicy tự đổi sang inter_splash_2nd.
         AdsPolicy.showInterAd(
             activity = activity,
-            adPlacement = AdsPlacementHolder.INTER,
+            adPlacement = AdsPlacementHolder.INTER_SPLASH,
             force = true,
-            onContinue = onNext
+            onContinue = {
+                // Inter xong thì chen native full; user trả phí / ads tắt thì đi thẳng.
+                if (AdsLoader.isAdsEnabled()) showNativeFull = true else leave()
+            }
         )
     }
 
@@ -244,16 +274,36 @@ fun SplashScreen(onNext: () -> Unit = {}) {
                     },
             )
 
-            // Keeps the loader at the same height whether or not the banner has arrived.
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(96.dp),
-                contentAlignment = Alignment.BottomCenter,
-            ) {
-                if (ready) {
-                    AdBanner(placement = AdsPlacementHolder.BANNER)
-                }
+            if (ready) {
+                Spacer(Modifier.height(12.dp))
+                ComposeNativeAdFrame(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    layoutResId = R.layout.frame_ad_small,
+                    templateAdLayoutRes = R.layout.template_ad_small,
+                    adPlacement = AdsPlacementHolder.NATIVE_SPLASH,
+                    reloadOnResume = false,
+                )
+            }
+        }
+
+        if (showNativeFull) {
+            NativeAdOverlay(
+                layoutResId = R.layout.frame_ad_full,
+                closeDelaySeconds = 0,
+                fullScreen = true,
+                onClose = leave,
+            ) { container, shimmer ->
+                AdsPolicy.bindNativeAd(
+                    activity = activity,
+                    adPlacement = AdsPlacementHolder.NATIVE_FULL_SPLASH,
+                    container = container,
+                    shimmer = shimmer,
+                    templateAdLayoutRes = R.layout.template_ad_full,
+                    // Không load được thì sang Language luôn, không bắt user chờ.
+                    onAdFailed = leave,
+                )
             }
         }
     }

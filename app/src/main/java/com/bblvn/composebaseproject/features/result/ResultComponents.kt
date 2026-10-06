@@ -1,5 +1,14 @@
 package com.bblvn.composebaseproject.features.result
 
+import androidx.compose.ui.unit.em
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.sp
+import com.bblvn.composebaseproject.ui.components.ZoomableImage
+import com.bblvn.composebaseproject.utils.ImageUtils
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
@@ -76,6 +85,7 @@ internal fun ResultStage(
     resultPath: String,
     sourcePath: String?,
     playReveal: Boolean,
+    onOpenImage: (isSource: Boolean) -> Unit = {},
 ) {
     val reveal = remember(playReveal) { Animatable(if (playReveal) 0f else 1f) }
     LaunchedEffect(playReveal) {
@@ -101,6 +111,7 @@ internal fun ResultStage(
                 contentScale = ContentScale.Fit,
                 showShimmer = false,
             )
+            Box(Modifier.fillMaxSize().clickable { onOpenImage(false) })
         } else {
             val source = remember(sourcePath) { File(sourcePath) }
             CompareSlider(
@@ -112,6 +123,7 @@ internal fun ResultStage(
                 contentScale = ContentScale.Fit,
                 revealOnFirstShow = playReveal,
                 revealDurationMillis = REVEAL_MILLIS,
+                onTapSide = { before -> onOpenImage(before) },
             )
         }
     }
@@ -278,5 +290,64 @@ private fun ResultBottomBarPreview() {
             Spacer(Modifier.height(12.dp))
             WatermarkNotice(onClick = {})
         }
+    }
+}
+
+/**
+ * Full-screen black viewer for one image (source or result): pinch / pan / double-tap zoom come from
+ * [ZoomableImage]. The Vezora mark is a UI overlay only (40% — same as the exported copy); the file
+ * itself stays clean. Shown for the result image of non-premium users.
+ */
+@Composable
+internal fun ResultImageViewer(
+    path: String,
+    showWatermark: Boolean,
+    onClose: () -> Unit,
+) {
+    androidx.activity.compose.BackHandler(onBack = onClose)
+    val file = remember(path) { File(path) }
+    // Fit-letterboxed image: the mark must sit in the PICTURE's corner, not the screen's, so the
+    // overlay is a box with the image's aspect ratio centred in the zoom layer.
+    val aspect = remember(path) {
+        val o = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        android.graphics.BitmapFactory.decodeFile(path, o)
+        if (o.outWidth > 0 && o.outHeight > 0) o.outWidth.toFloat() / o.outHeight else null
+    }
+    Box(Modifier.fillMaxSize().background(Color.Black).pointerInput(Unit) { detectTapGestures { } }) {
+        ZoomableImage(
+            modifier = Modifier.fillMaxSize(),
+            model = file,
+            doubleTapToReset = true,
+            imageOverlay = {
+                if (showWatermark && aspect != null) {
+                    BoxWithConstraints(Modifier.align(Alignment.Center).aspectRatio(aspect)) {
+                        // Sized from the picture's width, like a stamp burned into it, so it
+                        // scales with the image at every zoom level.
+                        val w = maxWidth
+                        Text(
+                            text = ImageUtils.WATERMARK_TEXT,
+                            color = Color.White.copy(alpha = ImageUtils.WATERMARK_ALPHA / 255f),
+                            style = androidx.compose.ui.text.TextStyle(
+                                fontSize = with(androidx.compose.ui.platform.LocalDensity.current) {
+                                    (w * ImageUtils.WATERMARK_TEXT_RATIO).toSp()
+                                },
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                letterSpacing = 0.06.em,
+                            ),
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(end = w * ImageUtils.WATERMARK_MARGIN_RATIO, bottom = w * ImageUtils.WATERMARK_MARGIN_RATIO),
+                        )
+                    }
+                }
+            },
+        )
+        AppIconButton(
+            modifier = Modifier.align(Alignment.TopStart).statusBarsPadding().padding(12.dp),
+            icon = R.drawable.ic_close,
+            contentDescription = stringResource(R.string.back),
+            background = CONTROL_SCRIM,
+            onClick = onClose,
+        )
     }
 }

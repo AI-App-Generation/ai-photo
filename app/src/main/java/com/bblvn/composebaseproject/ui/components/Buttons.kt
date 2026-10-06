@@ -70,6 +70,8 @@ fun PrimaryButton(
     fillMaxWidth: Boolean = true,
     height: Dp = 56.dp,
     shape: Shape = AppShapes.button,
+    /** Giá tính bằng credit; khác null thì hiện viên thuốc "⚡ n" sau nhãn. Chỉ cho nút bắt đầu tạo ảnh. */
+    cost: Int? = null,
     onClick: () -> Unit,
 ) {
     val effective = if (enabled) variant else ButtonVariant.Neutral
@@ -124,6 +126,10 @@ fun PrimaryButton(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            if (cost != null) {
+                Spacer(Modifier.width(10.dp))
+                CreditCostBadge(cost = cost, contentColor = contentColor)
+            }
         }
     }
 }
@@ -138,6 +144,7 @@ fun SecondaryButton(
     fillMaxWidth: Boolean = false,
     height: Dp = 48.dp,
     contentColor: Color = AppColors.textPrimary,
+    borderColor: Color = AppColors.strokeSoft,
     onClick: () -> Unit,
 ) {
     Box(
@@ -146,7 +153,7 @@ fun SecondaryButton(
             .height(height)
             .clip(AppShapes.button)
             .background(AppColors.bgElevated)
-            .border(1.dp, AppColors.strokeSoft, AppShapes.button)
+            .border(1.dp, borderColor, AppShapes.button)
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {

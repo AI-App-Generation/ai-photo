@@ -155,27 +155,30 @@ object ImageUtils {
      * Applied ONLY to the exported/shared copy for free users — never to the file in `results/`,
      * so a later PRO upgrade can re-export the same creation clean (R6.7).
      */
-    fun applyWatermark(context: Context, source: Bitmap, logoResId: Int): Bitmap {
+    fun applyWatermark(source: Bitmap, text: String = WATERMARK_TEXT): Bitmap {
         val output = source.copy(Bitmap.Config.ARGB_8888, true) ?: return source
-        val logo = runCatching {
-            context.getDrawable(logoResId)?.toBitmap()
-        }.getOrNull() ?: return output
-
         val canvas = Canvas(output)
-        val targetWidth = (output.width * 0.22f).toInt().coerceAtLeast(1)
-        val targetHeight = (targetWidth * logo.height / logo.width.toFloat()).toInt()
-            .coerceAtLeast(1)
-        val margin = (output.width * 0.04f).toInt()
-        val dest = Rect(
-            output.width - targetWidth - margin,
-            output.height - targetHeight - margin,
-            output.width - margin,
-            output.height - margin,
-        )
-        canvas.drawBitmap(logo, null, dest, Paint().apply { alpha = 170 })
-        logo.recycle()
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = android.graphics.Color.WHITE
+            alpha = WATERMARK_ALPHA
+            typeface = android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD)
+            textSize = output.width * WATERMARK_TEXT_RATIO
+            letterSpacing = 0.06f
+            setShadowLayer(output.width * 0.005f, 0f, 0f, android.graphics.Color.argb(90, 0, 0, 0))
+        }
+        val margin = output.width * WATERMARK_MARGIN_RATIO
+        canvas.drawText(text, output.width - margin - paint.measureText(text), output.height - margin, paint)
         return output
     }
+
+    const val WATERMARK_TEXT = "Vezora"
+
+    /** Text size / margin as a fraction of the image width — shared by the export and the viewer so the mark looks identical in both. */
+    const val WATERMARK_TEXT_RATIO = 0.05f
+    const val WATERMARK_MARGIN_RATIO = 0.03f
+
+    /** 40% opacity — keep in sync with the viewer overlay in ResultScreen. */
+    const val WATERMARK_ALPHA = 102
 
     /**
      * Force a flat background colour behind a subject. Used by the Remove Background tool when

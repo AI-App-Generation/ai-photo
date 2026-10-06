@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "761347999798",
-    "project_id": "gamemode-fef31",
-    "storage_bucket": "gamemode-fef31.firebasestorage.app"
+    "project_number": "633334019996",
+    "project_id": "vezora-ai-photo-generator",
+    "storage_bucket": "vezora-ai-photo-generator.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:761347999798:android:158f6b4bc68036a414f097",
+        "mobilesdk_app_id": "1:633334019996:android:fea2afa541f772a801fa59",
         "android_client_info": {
           "package_name": "com.vezora.photo.ai.generator"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBbeLqbsOBMyqINQ1TOO1L5D3KrfM3tQS0"
+          "current_key": "AIzaSyCa2th8i0mS1QP7sK50nF-9LY5YW8mDrkc"
         }
       ],
       "services": {

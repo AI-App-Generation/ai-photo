@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.features.tools
 
+import com.bblvn.composebaseproject.core.AppCapability
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,7 +37,10 @@ import com.bblvn.composebaseproject.R
 import com.bblvn.composebaseproject.core.SettingManager
 import com.bblvn.composebaseproject.data.domain.ToolType
 import com.bblvn.composebaseproject.ui.components.AccountChip
+import com.bblvn.composebaseproject.ui.components.CreditChip
 import com.bblvn.composebaseproject.ui.components.PremiumBadge
+import com.bblvn.composebaseproject.ui.components.ads.AdCarousel
+import com.bblvn.composebaseproject.ui.components.ads.rememberAdCarouselSession
 import com.bblvn.composebaseproject.ui.theme.AppColors
 import com.bblvn.composebaseproject.ui.theme.AppGradients
 import com.bblvn.composebaseproject.ui.theme.AppShapes
@@ -55,7 +59,9 @@ fun ToolsHubScreen(
     onOpenPaywall: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isPremium by SettingManager.isPurchased.collectAsStateWithLifecycle()
+    val isPremium by AppCapability.isPremium.collectAsStateWithLifecycle()
+    // Mở ở mức màn hình (ngoài LazyColumn) để cuộn không làm nạp lại ad; đổi tab thì session được trả.
+    val adSession = rememberAdCarouselSession()
 
     Box(modifier = modifier.fillMaxSize().background(AppColors.bgRoot)) {
         LazyColumn(
@@ -88,6 +94,14 @@ fun ToolsHubScreen(
                     tool = ToolPresentation.featured,
                     locked = ToolPresentation.featured.isPremium && !isPremium,
                     onClick = { onToolClick(ToolPresentation.featured.name) },
+                )
+            }
+
+            // native_swipe_home: ngay dưới card Enhance (featured), trước lưới các tool còn lại.
+            item {
+                AdCarousel(
+                    session = adSession,
+                    modifier = Modifier.padding(top = 12.dp),
                 )
             }
 
@@ -125,7 +139,11 @@ fun ToolsHubScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Spacer(Modifier.weight(1f))
-            AccountChip(isPremium = isPremium, onClick = onOpenPaywall)
+            CreditChip()
+            if (!isPremium) {
+                Spacer(Modifier.width(8.dp))
+                AccountChip(isPremium = false, onClick = onOpenPaywall)
+            }
         }
     }
 }

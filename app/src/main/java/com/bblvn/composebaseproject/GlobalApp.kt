@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject
 
+import com.bblvn.composebaseproject.core.Analytics
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -12,6 +13,9 @@ import com.bblvn.composebaseproject.ads.AdsPolicy
 import com.bblvn.composebaseproject.core.AppRuntime
 import com.bblvn.composebaseproject.core.SettingManager
 import com.bblvn.composebaseproject.features.iap.Iap
+import com.bblvn.composebaseproject.features.iap.IapController
+import com.bblvn.composebaseproject.features.uninstall.UninstallActivity
+import com.bblvn.composebaseproject.features.uninstall.createUninstallShortcut
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -28,9 +32,21 @@ class GlobalApp : AdsMultiDexApplication(), coil.ImageLoaderFactory {
             adLoggingType = "realtime_database"
             isVariantDev = BuildConfig.DEBUG
             loadStrategy = GlobalConfig.LOAD_STRATEGY_WATERFALL
-            adjustToken = ""
+            // Adjust: token app + token event dùng để đo doanh thu quảng cáo.
+            adjustToken = "gl4yzp7vw1ds"
+            adjustEventToken = "fjy52o"
             appsflyerToken = ""
-            facebookClientToken = ""
+            // Meta / Facebook SDK (trùng với @string/facebook_app_id + facebook_client_token
+            // đang khai báo ở AndroidManifest cho meta-data của SDK).
+            metaFacebookAppId = "2125791808013444"
+            facebookClientToken = "194e9e2a036dc3da92a8915a8f53e03d"
+            // Bắn doanh thu quảng cáo sang Facebook dưới dạng event "purchase" để Meta có tín hiệu
+            // tối ưu chiến dịch.
+            isEnableFacebookAdRevenuePurchaseLogging = true
+            // Module-ads đối chiếu id mua được với hai mảng này để tự nhận ra user đã trả tiền (tắt ads),
+            // nên phải khai đúng loại. Gói credit (consumable) cố ý KHÔNG nằm ở đây.
+            adFreeSubscriptionProductIds = Iap.subscriptions.toTypedArray()
+            adFreeInAppProductIds = Iap.inAppProducts.toTypedArray()
             testDevices = arrayOf("727854F084C6F0CDC793A5A192B72FCC", "8D9B9371B8704790A1C041FAF7C14071", "B7DE3A60025A6EBCAC171F608A5EB87B", "EB52EFE4C726897953885CB827CA2EFC")
         }
     }
@@ -39,13 +55,20 @@ class GlobalApp : AdsMultiDexApplication(), coil.ImageLoaderFactory {
         super.onCreate()
 
         SettingManager.init(this)
+        Analytics.init(this)
         // AI Photo: storage, history DB, generation engine, catalog (see core/AppRuntime.kt).
         AppRuntime.init(this)
 
         AdsManager.getInstance().apply {
             disableAppResumeWithActivity(com.google.android.libraries.ads.mobile.sdk.common.AdActivity::class.java)
             disableAppResumeWithActivity(MainActivity::class.java)
+            // Luồng gỡ app là màn giữ chân, chen thêm quảng cáo mở app vào đó thì phản tác dụng.
+            disableAppResumeWithActivity(UninstallActivity::class.java)
         }
+
+        // Shortcut "Uninstall" ở menu giữ icon launcher — lối vào duy nhất khả thi, vì Android
+        // không báo cho app biết lúc nó sắp bị gỡ.
+        createUninstallShortcut(this)
 
         AdsLoader.initEarly(this)
 
@@ -85,6 +108,7 @@ class GlobalApp : AdsMultiDexApplication(), coil.ImageLoaderFactory {
             override fun onStop(owner: LifecycleOwner) {
                 if (!AdsPolicy.isShowingInterAd && AdsLoader.isAdsEnabled()) {
                     _shouldShowWelcomeBack.value = true
+                    AdsPolicy.preloadWelcomeBack()
                 }
             }
         })
@@ -97,9 +121,12 @@ class GlobalApp : AdsMultiDexApplication(), coil.ImageLoaderFactory {
     private fun initBilling() {
         val listIAPId: ArrayList<String> = ArrayList()
         val listSubsId: ArrayList<String> = ArrayList()
-        listSubsId.add(Iap.weeklyId)
-        listSubsId.add(Iap.monthlyId)
-        listIAPId.add(Iap.lifetimeId)
+        listSubsId.addAll(Iap.subscriptions)
+        listIAPId.addAll(Iap.allInApp)
         AppPurchase.getInstance().initBilling(this, listIAPId, listSubsId, this.globalConfig)
+        IapController.registerPurchaseListener()
+        // Quyền lợi KHÔNG được lưu trên máy nên phải dựng lại từ câu trả lời của Play; giá trị đó chỉ
+        // có sau khi billing client bắt tay xong, nên cần listener này.
+        IapController.registerBillingListener()
     }
 }

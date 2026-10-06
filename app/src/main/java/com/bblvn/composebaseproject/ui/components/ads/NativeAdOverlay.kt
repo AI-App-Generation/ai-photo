@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -40,6 +41,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.bblvn.composebaseproject.ads.AdsLoader
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.bblvn.composebaseproject.R
+import com.bblvn.composebaseproject.ui.theme.AppColors
 import kotlinx.coroutines.delay
 
 @Composable
@@ -47,6 +49,11 @@ fun NativeAdOverlay(
     @LayoutRes layoutResId: Int = R.layout.frame_ad_paid,
     closeDelaySeconds: Int? = null,
     onClose: () -> Unit = {},
+    /**
+     * Dùng cho layout native full (frame_ad_full): phủ kín màn hình bằng nền đặc, chặn chạm xuyên
+     * xuống, chừa vùng status bar. Để false thì overlay trong suốt như trước.
+     */
+    fullScreen: Boolean = false,
     onAdHostReady: (FrameLayout, ShimmerFrameLayout) -> Unit
 ) {
     val minReloadGapMs = 1_000L
@@ -111,10 +118,24 @@ fun NativeAdOverlay(
     }
 
     if (isActive && isVisible) {
-        Box {
+        Box(
+            modifier = if (fullScreen) {
+                // Phủ kín bằng nền đặc và nuốt mọi cú chạm, để màn phía sau không lộ ra cũng không
+                // bấm xuyên được.
+                Modifier
+                    .fillMaxSize()
+                    .background(AppColors.bgRoot)
+                    .pointerInput(Unit) {}
+            } else {
+                Modifier
+            }
+        ) {
             AndroidView(
                 modifier = Modifier
                     .fillMaxSize()
+                    // Full screen: layout tự chừa 56dp cho nút đóng, nên phải đẩy xuống dưới
+                    // status bar để nó không đè lên nội dung quảng cáo.
+                    .then(if (fullScreen) Modifier.statusBarsPadding() else Modifier)
                     .navigationBarsPadding(),
                 factory = { context ->
                     FrameLayout(context)
@@ -136,7 +157,7 @@ fun NativeAdOverlay(
                         .padding(16.dp)
                         .size(24.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFBDBDBD))
+                        .background(AppColors.bgElevated)
                         .clickable(
                             enabled = (remainingTime ?: 0) <= 0
                         ) {

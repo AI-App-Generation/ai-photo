@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +20,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import com.bblvn.composebaseproject.ui.components.ads.ComposeNativeAdFrame
+import com.bblvn.composebaseproject.ui.components.ads.AdBanner
+import com.bblvn.composebaseproject.ads.AdsPlacementHolder
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bblvn.composebaseproject.R
+import com.bblvn.composebaseproject.core.AppCapability
+import com.bblvn.composebaseproject.ads.AdsLoader
+import com.bblvn.composebaseproject.ads.AdModeManager
 import com.bblvn.composebaseproject.core.OnUiEvent
 import com.bblvn.composebaseproject.core.UiEvent
 import com.bblvn.composebaseproject.data.domain.ToolType
@@ -47,6 +58,8 @@ import com.bblvn.composebaseproject.ui.components.CompareSlider
 import com.bblvn.composebaseproject.ui.components.PhotoSlot
 import com.bblvn.composebaseproject.ui.components.PremiumBadge
 import com.bblvn.composebaseproject.ui.components.PrimaryButton
+import com.bblvn.composebaseproject.ui.components.RewardPrompt
+import com.bblvn.composebaseproject.ui.components.RewardKind
 import com.bblvn.composebaseproject.ui.theme.AppColors
 import com.bblvn.composebaseproject.ui.theme.AppShapes
 import com.bblvn.composebaseproject.ui.theme.AppType
@@ -70,6 +83,8 @@ fun ToolDetailScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var toast by remember { mutableStateOf<String?>(null) }
+    // Dialog "xem quảng cáo thưởng hoặc mở paywall": tool bị khoá PRO, hoặc hết credit.
+    var rewardKind by remember { mutableStateOf<RewardKind?>(null) }
 
     LaunchedEffect(tool) { vm.bind(tool) }
 
@@ -129,7 +144,8 @@ fun ToolDetailScreen(
                         )
                         // align = Top on the Row, so a 2-line tool name does not drag the badge
                         // down to the vertical centre (R1).
-                        if (tool.isPremium) PremiumBadge()
+                        // Đã mở khoá một lần (hoặc đã là PRO) thì ẩn nhãn.
+                        if (state.locked) PremiumBadge()
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -138,6 +154,17 @@ fun ToolDetailScreen(
                         color = AppColors.textSecondary,
                     )
                 }
+            }
+
+            // native_tool_detail: dưới đoạn mô tả, trên ô chọn ảnh. Ô tự ẩn khi không có ad.
+            item(key = "ad_native") {
+                ComposeNativeAdFrame(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    layoutResId = R.layout.frame_ad_inline,
+                    adPlacement = AdsPlacementHolder.NATIVE_TOOL_DETAIL,
+                )
             }
 
             item {
@@ -191,15 +218,66 @@ fun ToolDetailScreen(
             onBack = onBack,
         )
 
-        BottomCtaBar(modifier = Modifier.align(Alignment.BottomCenter)) {
-            PrimaryButton(
-                text = ctaLabel(state),
-                icon = if (state.locked) R.drawable.ic_lock else R.drawable.ic_sparkles,
-                enabled = state.canStart || state.locked,
-                variant = if (state.locked) ButtonVariant.Gold else ButtonVariant.Brand,
-                onClick = { vm.onStart(onStart) },
-            )
+        // banner_all: banner đáy màn, nằm DƯỚI thanh CTA và đẩy nó lên. Ô banner giữ chỗ cho thanh
+        // điều hướng hệ thống kể cả khi banner không nạp được, nên CTA không bao giờ chìm xuống đáy.
+        val adsActive by AdsLoader.isActive.collectAsState()
+        val showBanner = adsActive && AdModeManager.isEnabled(AdsPlacementHolder.BANNER_ALL)
+
+        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+            BottomCtaBar(
+                // BottomCtaBar tự áp navigationBarsPadding(); banner bên dưới lo phần đó nên phải
+                // tiêu thụ inset trước để không đệm đôi.
+                modifier = if (showBanner) {
+                    Modifier.consumeWindowInsets(WindowInsets.navigationBars)
+                } else {
+                    Modifier
+                },
+            ) {
+                PrimaryButton(
+                    text = ctaLabel(state),
+                    icon = if (state.locked) R.drawable.ic_lock else R.drawable.ic_sparkles,
+                    enabled = state.canStart || state.locked,
+                    variant = if (state.locked) ButtonVariant.Gold else ButtonVariant.Brand,
+                    // Giá 1 credit cho lượt tạo ảnh; nút "mở khoá PRO" thì không có giá.
+                    cost = if (state.locked) null else AppCapability.COST_PER_GENERATION,
+                    onClick = {
+                        when {
+                            state.locked -> rewardKind = RewardKind.UnlockTool
+                            !AppCapability.canAffordGeneration() -> rewardKind = RewardKind.Credits
+                            else -> vm.onStart(onStart)
+                        }
+                    },
+                )
+            }
+            if (showBanner) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(AppColors.bgRoot)
+                        .navigationBarsPadding(),
+                ) {
+                    AdBanner(placement = AdsPlacementHolder.BANNER_ALL)
+                }
+            }
         }
+
+        RewardPrompt(
+            kind = rewardKind,
+            onGranted = { kind ->
+                when (kind) {
+                    // Cộng một lượt mở khoá cho tool này; nút khoá tự đổi thành nút bắt đầu.
+                    RewardKind.UnlockTool ->
+                        AppCapability.grantUnlock(AppCapability.toolUnlockKey(tool.name))
+                    RewardKind.Credits -> AppCapability.grantRewardedCredits()
+                    else -> Unit
+                }
+            },
+            onOpenPaywall = {
+                rewardKind = null
+                onOpenPaywall()
+            },
+            onDismiss = { rewardKind = null },
+        )
 
         AppToast(
             visible = toast != null,

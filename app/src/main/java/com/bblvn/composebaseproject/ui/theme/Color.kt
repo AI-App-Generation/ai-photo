@@ -29,6 +29,7 @@ object AppColors {
     val accentViolet = Color(0xFF7C5CFF)
     val accentMagenta = Color(0xFFFF4FD8)
     val accentCyan = Color(0xFF4FE3FF)
+    val accentBlue = Color(0xFF3B8BFF)
 
     // --- Premium ---------------------------------------------------------
     val goldLight = Color(0xFFFFD87A)

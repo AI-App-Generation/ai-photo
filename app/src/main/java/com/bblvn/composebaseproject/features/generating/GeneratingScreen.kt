@@ -18,6 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import com.bblvn.composebaseproject.ui.components.ads.ComposeNativeAdFrame
+import com.bblvn.composebaseproject.ads.AdsPolicy
+import com.bblvn.composebaseproject.ads.AdsPlacementHolder
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -91,7 +95,28 @@ fun GeneratingScreen(
     // recomposition or a configuration change can never submit a second job.
     LaunchedEffect(Unit) { vm.onEnter() }
 
-    LaunchedEffect(state.successCreationId) {
+    // inter_generate: hiện ngay khi vào màn, trong lúc AI xử lý. Dùng remember (không phải
+    // rememberSaveable) cố ý: nếu màn bị dựng lại giữa chừng thì chạy lại chứ không kẹt ở "chưa xong".
+    // force = true: inter này không chịu giãn cách 30s của inter_tab/open_*.
+    val activity = LocalActivity.current
+    var interDone by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        val host = activity
+        if (host == null) {
+            interDone = true
+            return@LaunchedEffect
+        }
+        AdsPolicy.showInterAd(
+            activity = host,
+            adPlacement = AdsPlacementHolder.INTER_GENERATE,
+            force = true,
+            onContinue = { interDone = true },
+        )
+    }
+
+    // AI xong lúc ad còn đang hiện thì để ad chạy hết rồi mới sang màn kết quả, không cắt ad.
+    LaunchedEffect(state.successCreationId, interDone) {
+        if (!interDone) return@LaunchedEffect
         state.successCreationId?.let(onSuccess)
     }
 
@@ -123,11 +148,26 @@ fun GeneratingScreen(
                 },
             )
         } else {
-            GeneratingContent(state = state, animationsActive = animationsActive)
+            // Cột: nội dung (chiếm phần còn lại) → native_generating → nút huỷ. Dùng Column thay vì xếp
+            // chồng để ad không đè lên nội dung ở màn thấp.
+            Column(modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.weight(1f)) {
+                    GeneratingContent(state = state, animationsActive = animationsActive)
+                }
+
+                // native_generating: user nhìn màn này ~30s nên ad có thời gian hiển thị dài.
+                ComposeNativeAdFrame(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    layoutResId = R.layout.frame_ad_medium,
+                    templateAdLayoutRes = R.layout.template_ad_medium,
+                    adPlacement = AdsPlacementHolder.NATIVE_GENERATING,
+                )
 
             Column(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
                     .navigationBarsPadding()
                     .padding(bottom = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -138,6 +178,7 @@ fun GeneratingScreen(
                     horizontalPadding = 20.dp,
                     onClick = { confirmVisible = true },
                 )
+            }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.ads
 
+import com.bblvn.composebaseproject.core.AppCapability
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -28,11 +29,27 @@ object AdsLoader {
 
     fun setActive(isPurchased: Boolean) {
         _isActive.value = !isPurchased
+        // Một nguồn sự thật duy nhất cho toàn app: ẩn quảng cáo, mở khoá template/tool, bỏ watermark
+        // đều đọc từ AppCapability.isPremium.
+        AppCapability.setPremium(isPurchased)
+    }
+
+    /**
+     * Trạng thái trả phí, hỏi thẳng Google Play qua `AppPurchase`.
+     *
+     * CỐ Ý không đọc cờ lưu trên máy: gói subscription hết hạn được, mà một cờ đã ghi xuống đĩa thì
+     * không có gì xoá đi. Đổi lại, giá trị này chỉ đáng tin SAU khi billing client kết nối xong —
+     * trước đó luôn là false. Vì vậy `IapController` gọi lại [refreshPurchaseState] khi billing sẵn
+     * sàng và mỗi khi Play làm mới danh sách mua.
+     */
+    private fun isPurchased(): Boolean = AppPurchase.getInstance().isPurchased
+
+    /** Đồng bộ lại quyền lợi khi Google Play có câu trả lời mới. */
+    fun refreshPurchaseState() {
+        setActive(isPurchased())
     }
 
     fun isAdsEnabled(): Boolean = _isActive.value
-
-    private fun isPurchased(): Boolean = AppPurchase.getInstance().isPurchased || SettingManager.isPurchased.value
 
     fun initEarly(context: Context) {
         val appContext = context.applicationContext

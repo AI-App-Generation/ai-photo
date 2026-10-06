@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Photo</string>
+    <string name="app_name">Vezora</string>
 
     <string name="ok">확인</string>
     <string name="cancel">취소</string>
@@ -55,4 +55,77 @@
     <string name="welcome_back_title">다시 오신 것을 환영합니다!</string>
     <string name="welcome_back_body">AI 스튜디오가 준비되었습니다. 하던 작업을 바로 이어서 해 보세요.</string>
     <string name="welcome_back_continue">계속</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">삭제</string>
+    <string name="uninstall_splash_loading">잠시만 기다려 주세요…</string>
+    <string name="uninstall_notice_title">벌써 떠나시나요?</string>
+    <string name="uninstall_notice_desc_empty">AI로 만든 모든 것이 이 앱 안에 있습니다.</string>
+    <string name="uninstall_notice_desc">이 기기에 %1$d개의 작품이 저장되어 있습니다. 앱을 삭제하면 영구적으로 지워집니다.</string>
+    <string name="uninstall_keep_app">앱 유지하기</string>
+    <string name="uninstall_continue">계속 삭제하기</string>
+    <string name="uninstall_survey_title">왜 떠나시나요?</string>
+    <string name="uninstall_survey_subtitle">의견은 앱을 개선하는 데 도움이 됩니다.</string>
+    <string name="uninstall_reason_quality">결과가 충분히 좋지 않아요</string>
+    <string name="uninstall_reason_slow">너무 오래 걸려요</string>
+    <string name="uninstall_reason_ads">광고가 너무 많아요</string>
+    <string name="uninstall_reason_price">가격이 너무 비싸요</string>
+    <string name="uninstall_reason_better">더 좋은 앱을 찾았어요</string>
+    <string name="uninstall_reason_other">기타</string>
+    <string name="uninstall_confirm">삭제</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">크레딧이 부족합니다</string>
+    <string name="generating_error_credits_title">크레딧이 부족합니다</string>
+    <string name="generating_error_credits_hint">이미지를 만들려면 1크레딧이 필요합니다.</string>
+    <string name="credits_balance_description">%1$d 크레딧</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">광고 보기</string>
+    <string name="reward_unlock_pro">PRO로 잠금 해제</string>
+    <string name="reward_view_plans">요금제 보기</string>
+    <string name="reward_template_title">이 PRO 템플릿 한 번 사용</string>
+    <string name="reward_template_message">짧은 광고를 보면 이 템플릿을 한 번 만들 때 사용할 수 있습니다.</string>
+    <string name="reward_tool_title">이 PRO 도구 한 번 사용해 보기</string>
+    <string name="reward_tool_message">짧은 광고를 보면 이 도구를 한 번 만들 때 사용할 수 있습니다.</string>
+    <string name="reward_credits_title">크레딧이 없습니다</string>
+    <string name="reward_credits_message">짧은 광고를 보고 1크레딧을 받아 계속 만들어 보세요.</string>
+    <string name="reward_save_title">워터마크 없이 저장</string>
+    <string name="reward_save_message">짧은 광고를 보면 워터마크 없이 이 이미지를 저장할 수 있습니다. PRO로 영구적으로 제거할 수도 있습니다.</string>
+    <string name="reward_save_with_watermark">워터마크와 함께 저장</string>
+    <string name="reward_ad_unavailable">지금은 표시할 수 있는 광고가 없습니다. 나중에 다시 시도해 주세요.</string>
+    <string name="reward_incomplete">보상을 받으려면 광고를 끝까지 시청해 주세요.</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">앱의 모든 광고 제거</string>
+    <string name="paywall_benefit_faster">더 빠른 이미지 생성</string>
+    <string name="paywall_benefit_no_watermark">워터마크 제거 및 고해상도 이미지 저장</string>
+    <string name="paywall_benefit_premium_templates">프리미엄 템플릿 잠금 해제</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">Vezora PRO</string>
+    <string name="paywall_subtitle">모든 템플릿과 도구 잠금 해제</string>
+    <string name="paywall_close">닫기</string>
+    <string name="paywall_continue">계속</string>
+    <string name="paywall_restore">복원</string>
+    <string name="paywall_terms">이용약관</string>
+    <string name="paywall_privacy">개인정보처리방침</string>
+    <string name="paywall_most_popular">가장 인기</string>
+    <string name="paywall_plan_weekly">주간</string>
+    <string name="paywall_plan_weekly_note">체험해 보기</string>
+    <string name="paywall_unit_weekly">주당</string>
+    <string name="paywall_plan_monthly">월간</string>
+    <string name="paywall_plan_monthly_note">최고의 가치</string>
+    <string name="paywall_unit_monthly">월당</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">크레딧 받기</string>
+    <string name="credit_store_subtitle">이미지 생성 1회에 1크레딧이 사용됩니다. 크레딧은 만료되지 않습니다.</string>
+    <string name="credit_store_balance">잔액: %1$d 크레딧</string>
+    <string name="credit_store_pack">%1$d 크레딧</string>
+    <string name="credit_store_best_value">최고의 가치</string>
+    <string name="credit_store_purchased">+%1$d 크레딧이 추가되었습니다</string>
+    <string name="credits_add_description">크레딧 더 받기</string>
+    <string name="reward_buy_credits">크레딧 받기</string>
+    <string name="reward_credits_message_no_ad">광고 보상 크레딧을 이미 사용했습니다. 크레딧을 받아 계속 만들어 보세요.</string>
 </resources>

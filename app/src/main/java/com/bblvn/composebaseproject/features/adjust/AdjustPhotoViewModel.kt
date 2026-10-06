@@ -10,7 +10,6 @@ import com.bblvn.composebaseproject.core.UiEvent
 import com.bblvn.composebaseproject.core.UiText
 import com.bblvn.composebaseproject.core.file.FileManager
 import com.bblvn.composebaseproject.corefeatures.generation.GenerationDraft
-import com.bblvn.composebaseproject.ui.components.ImageTransform
 import com.bblvn.composebaseproject.utils.ImageUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -21,6 +20,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -30,20 +30,20 @@ data class AdjustUiState(
     val totalSlots: Int = 1,
     val rotationDegrees: Float = 0f,
     val flipped: Boolean = false,
-    /** Bumped to snap [ImageTransform] back to identity. */
+    /** Bumped to snap the crop frame (and rotate/flip) back to the full picture. */
     val resetToken: Int = 0,
-    val transform: ImageTransform = ImageTransform(),
     val isExporting: Boolean = false,
 ) {
     val showsStepCounter: Boolean get() = totalSlots > 1
 
     /**
-     * True when the user has not moved anything. The export is skipped entirely in this case, so
-     * "do nothing and continue" is byte-for-byte lossless rather than a re-encode that softens the
-     * image — the behaviour the spec calls for and the one most likely to silently regress.
+     * True when the picture is neither rotated nor flipped. Together with a crop frame that still
+     * covers the whole picture, the export is skipped entirely, so "do nothing and continue" is
+     * byte-for-byte lossless rather than a re-encode that softens the image — the behaviour the
+     * spec calls for and the one most likely to silently regress.
      */
     val isUntouched: Boolean
-        get() = transform.isIdentity && rotationDegrees == 0f && !flipped
+        get() = rotationDegrees == 0f && !flipped
 }
 
 class AdjustPhotoViewModel : ViewModel() {
@@ -69,8 +69,6 @@ class AdjustPhotoViewModel : ViewModel() {
         }
     }
 
-    fun onTransformChange(transform: ImageTransform) = update { it.copy(transform = transform) }
-
     fun onRotate() = update {
         it.copy(rotationDegrees = (it.rotationDegrees + 90f) % 360f)
     }
@@ -82,7 +80,6 @@ class AdjustPhotoViewModel : ViewModel() {
             rotationDegrees = 0f,
             flipped = false,
             resetToken = it.resetToken + 1,
-            transform = ImageTransform(),
         )
     }
 
@@ -95,13 +92,15 @@ class AdjustPhotoViewModel : ViewModel() {
     /**
      * Export the visible crop and hand the path to the draft.
      *
-     * [viewWidth]/[viewHeight] are the pixel size of the ZoomableImage box and [cropRect] the crop
-     * frame in that same coordinate space — both measured by the screen, so the maths below works
-     * on exactly what the user saw.
+     * [viewWidth]/[viewHeight] are the pixel size of the canvas the picture is centred in,
+     * [imageRect] the rectangle the (rotated) picture occupies there and [cropRect] the user's
+     * frame in that same space — all measured by the screen, so the maths below works on exactly
+     * what the user saw.
      */
     fun onConfirm(
         viewWidth: Float,
         viewHeight: Float,
+        imageRect: RectF,
         cropRect: RectF,
         onDone: () -> Unit,
     ) {
@@ -112,7 +111,11 @@ class AdjustPhotoViewModel : ViewModel() {
             viewModelScope.launch { _events.send(UiEvent.ShowToast(UiText.Res(R.string.adjust_error_missing))) }
             return
         }
-        if (current.isUntouched || viewWidth <= 0f || viewHeight <= 0f) {
+        val cropIsFull = abs(cropRect.left - imageRect.left) < FULL_TOLERANCE_PX &&
+            abs(cropRect.top - imageRect.top) < FULL_TOLERANCE_PX &&
+            abs(cropRect.right - imageRect.right) < FULL_TOLERANCE_PX &&
+            abs(cropRect.bottom - imageRect.bottom) < FULL_TOLERANCE_PX
+        if ((current.isUntouched && cropIsFull) || viewWidth <= 0f || viewHeight <= 0f) {
             GenerationDraft.clearAdjusted(current.slotIndex)
             onDone()
             return
@@ -145,21 +148,27 @@ class AdjustPhotoViewModel : ViewModel() {
         val bitmap = ImageUtils.decodeSampled(source, ImageUtils.MAX_UPLOAD_EDGE)
             ?: throw IllegalStateException("Cannot decode ${source.path}")
 
-        val matrix = previewMatrix(
+        val quarterTurn = isQuarterTurn(state.rotationDegrees)
+        val shownWidth = if (quarterTurn) bitmap.height else bitmap.width
+        val shownHeight = if (quarterTurn) bitmap.width else bitmap.height
+        val fit = min(viewWidth / shownWidth, viewHeight / shownHeight)
+
+        val matrix = displayMatrix(
             bitmapWidth = bitmap.width.toFloat(),
             bitmapHeight = bitmap.height.toFloat(),
             viewWidth = viewWidth,
             viewHeight = viewHeight,
-            transform = state.transform.copy(
-                rotationDegrees = state.rotationDegrees,
-                flippedHorizontally = state.flipped,
-            ),
+            rotationDegrees = state.rotationDegrees,
+            flipped = state.flipped,
         )
 
-        // Keep the crop's own aspect ratio; cap the long edge so a zoomed-in crop of a big photo
-        // does not produce a needlessly huge bitmap.
+        // Keep the crop's own aspect ratio and the picture's own resolution: one source pixel per
+        // output pixel (view px / fit), capped so a huge photo does not produce a huge bitmap.
         val aspect = cropRect.width() / cropRect.height()
-        val longEdge = min(ImageUtils.MAX_UPLOAD_EDGE.toFloat(), maxOf(cropRect.width(), cropRect.height()) * 2f)
+        val longEdge = min(
+            ImageUtils.MAX_UPLOAD_EDGE.toFloat(),
+            maxOf(cropRect.width(), cropRect.height()) / fit,
+        )
         val outWidth: Int
         val outHeight: Int
         if (aspect >= 1f) {
@@ -180,68 +189,38 @@ class AdjustPhotoViewModel : ViewModel() {
 
     companion object {
 
+        /** The crop frame counts as "still the whole picture" within this many pixels. */
+        private const val FULL_TOLERANCE_PX = 1.5f
+
+        /** 90° / 270° swap the picture's width and height on screen. */
+        fun isQuarterTurn(rotationDegrees: Float): Boolean =
+            (rotationDegrees / 90f).roundToInt() % 2 != 0
+
         /**
-         * Rebuilds, in source-bitmap space, the exact transform `ZoomableImage` applied on screen.
-         *
-         * `ZoomableImage` draws the image with `ContentScale.Fit` filling the box, then applies a
-         * `graphicsLayer` whose scale and rotation act about the BOX CENTRE and whose translation
-         * is applied last. Reproducing that order matters: doing the pan before the scale, or
-         * rotating about the image centre instead of the box centre, both look almost right for a
-         * centred subject and are visibly wrong once the user pans.
-         *
-         * Worked example — a 3000x4000 photo in a 1080x1440 box at scale 2.0 panned 100px left:
-         * s0 = min(1080/3000, 1440/4000) = 0.36, so the fitted image is exactly 1080x1440 at
-         * (0, 0). Scaling by 2 about the centre (540, 720) maps the image's left edge to
-         * 540 - 540*2 = -540, and the -100 pan shifts it to -640. A crop frame at x = 0 therefore
-         * starts 640px into the scaled image, i.e. 640 / (0.36 * 2) = 889px into the source.
+         * Maps source-bitmap pixels to the screen exactly as the Adjust screen draws them: the
+         * picture is Fit into the canvas AFTER rotation (so a quarter turn swaps its box), flipped
+         * and rotated about the canvas centre — the same order a `graphicsLayer` applies (scale,
+         * then rotation), which is what the on-screen picture uses.
          */
-        fun previewMatrix(
+        fun displayMatrix(
             bitmapWidth: Float,
             bitmapHeight: Float,
             viewWidth: Float,
             viewHeight: Float,
-            transform: ImageTransform,
+            rotationDegrees: Float,
+            flipped: Boolean,
         ): Matrix {
-            val fit = min(viewWidth / bitmapWidth, viewHeight / bitmapHeight)
-            val fittedLeft = (viewWidth - bitmapWidth * fit) / 2f
-            val fittedTop = (viewHeight - bitmapHeight * fit) / 2f
-            val centreX = viewWidth / 2f
-            val centreY = viewHeight / 2f
+            val quarterTurn = isQuarterTurn(rotationDegrees)
+            val shownWidth = if (quarterTurn) bitmapHeight else bitmapWidth
+            val shownHeight = if (quarterTurn) bitmapWidth else bitmapHeight
+            val fit = min(viewWidth / shownWidth, viewHeight / shownHeight)
 
             return Matrix().apply {
-                setScale(fit, fit)
-                postTranslate(fittedLeft, fittedTop)
-                // graphicsLayer order: scale, then rotation, then translation — about the centre.
-                postTranslate(-centreX, -centreY)
-                postScale(
-                    if (transform.flippedHorizontally) -transform.scale else transform.scale,
-                    transform.scale,
-                )
-                postRotate(transform.rotationDegrees)
-                postTranslate(centreX, centreY)
-                postTranslate(transform.offsetX, transform.offsetY)
+                setTranslate(-bitmapWidth / 2f, -bitmapHeight / 2f)
+                postScale(if (flipped) -fit else fit, fit)
+                postRotate(rotationDegrees)
+                postTranslate(viewWidth / 2f, viewHeight / 2f)
             }
-        }
-
-        /**
-         * The crop frame: exactly the rectangle the un-zoomed image occupies.
-         *
-         * Deliberately NOT a fixed 3:4 box. A fixed ratio would crop a 4:3 photo the moment the
-         * screen opened, so a user who touched nothing would still get a different image than they
-         * picked — which the spec forbids.
-         */
-        fun defaultCropRect(
-            bitmapWidth: Float,
-            bitmapHeight: Float,
-            viewWidth: Float,
-            viewHeight: Float,
-        ): RectF {
-            val fit = min(viewWidth / bitmapWidth, viewHeight / bitmapHeight)
-            val width = bitmapWidth * fit
-            val height = bitmapHeight * fit
-            val left = (viewWidth - width) / 2f
-            val top = (viewHeight - height) / 2f
-            return RectF(left, top, left + width, top + height)
         }
 
         /** Cheap bounds-only decode so the screen can size the crop frame before loading pixels. */

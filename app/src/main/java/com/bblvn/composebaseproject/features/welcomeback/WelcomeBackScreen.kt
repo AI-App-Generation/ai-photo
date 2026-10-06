@@ -218,7 +218,19 @@ fun WelcomeBackScreen(
                 PrimaryButton(
                     text = stringResource(R.string.welcome_back_continue),
                     icon = R.drawable.ic_sparkles,
-                    onClick = onDismiss,
+                    // "Get started": chen inter_welcome_back rồi mới đóng màn. Lỗi / không có ad
+                    // thì đóng luôn. Nút Back (BackHandler ở trên) đóng thẳng, không chen ad.
+                    onClick = {
+                        if (activity == null) {
+                            onDismiss()
+                        } else {
+                            AdsPolicy.showInterAd(
+                                activity = activity,
+                                adPlacement = AdsPlacementHolder.INTER_WELCOME_BACK,
+                                onContinue = onDismiss,
+                            )
+                        }
+                    },
                     modifier = Modifier.graphicsLayer {
                         // ModulateAlpha: no offscreen buffer, so the glow/shadow outside the bounds isn't clipped while fading.
                         alpha = ctaAppear
@@ -231,7 +243,7 @@ fun WelcomeBackScreen(
             Spacer(Modifier.height(24.dp))
 
             ComposeNativeAdFrame(
-                adPlacement = AdsPlacementHolder.NATIVE,
+                adPlacement = AdsPlacementHolder.NATIVE_RESUME,
                 reloadOnResume = false,
             )
         }

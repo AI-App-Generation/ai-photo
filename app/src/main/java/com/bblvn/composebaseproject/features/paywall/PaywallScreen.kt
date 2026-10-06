@@ -1,5 +1,8 @@
 package com.bblvn.composebaseproject.features.paywall
 
+import androidx.compose.runtime.collectAsState
+import com.bblvn.composebaseproject.features.iap.IapController
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -54,8 +57,8 @@ import com.bblvn.composebaseproject.utils.IntentUtils
 /**
  * Subscription offer.
  *
- * Presentation only: per the build brief the purchase logic is wired up separately, so
- * [onPurchase] is the single seam where billing will be attached. Nothing here flips entitlement.
+ * Mua và khôi phục đi qua [IapController]; màn này không tự đổi quyền lợi. Mua xong thì premium
+ * bật qua `AppCapability` và MainContent tự đóng paywall.
  */
 @Composable
 fun PaywallScreen(
@@ -63,7 +66,10 @@ fun PaywallScreen(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val activity = LocalActivity.current
     var selectedPlan by remember { mutableStateOf(PaywallPlan.MONTHLY) }
+    // Giá thật từ Google Play (theo tiền tệ của user); chưa có thì hiện "—" thay vì một con số cứng.
+    val prices by IapController.prices.collectAsState()
 
     Box(modifier = modifier.fillMaxSize().background(AppColors.bgRoot)) {
         Image(
@@ -135,6 +141,7 @@ fun PaywallScreen(
                         PlanRow(
                             plan = plan,
                             selected = selectedPlan == plan,
+                            price = prices[plan.sku] ?: "—",
                             onSelect = { selectedPlan = plan },
                         )
                     }
@@ -169,11 +176,11 @@ fun PaywallScreen(
                 text = stringResource(R.string.paywall_continue),
                 variant = ButtonVariant.Gold,
                 height = 58.dp,
-                onClick = { onPurchase(selectedPlan) },
+                onClick = { activity?.let { IapController.buy(it, selectedPlan.sku) } },
             )
             Spacer(Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                FooterLink(stringResource(R.string.paywall_restore)) { onRestore() }
+                FooterLink(stringResource(R.string.paywall_restore)) { IapController.restore() }
                 FooterLink(stringResource(R.string.paywall_terms)) {
                     IntentUtils.openUrl(context, TERMS_URL)
                 }
@@ -186,14 +193,13 @@ fun PaywallScreen(
 }
 
 /**
- * The three offers, mapped to the SKU ids already declared in [Iap] so the screen and the billing
- * layer cannot drift apart.
+ * The two subscription offers, mapped to the SKU ids already declared in [Iap] so the screen and the
+ * billing layer cannot drift apart. Prices are NOT here: they come from Google Play at runtime.
  */
 enum class PaywallPlan(
     val sku: String,
     val nameRes: Int,
     val noteRes: Int,
-    val priceRes: Int,
     val unitRes: Int,
     val highlighted: Boolean = false,
 ) {
@@ -201,23 +207,14 @@ enum class PaywallPlan(
         sku = Iap.weeklyId,
         nameRes = R.string.paywall_plan_weekly,
         noteRes = R.string.paywall_plan_weekly_note,
-        priceRes = R.string.paywall_price_weekly,
         unitRes = R.string.paywall_unit_weekly,
     ),
     MONTHLY(
         sku = Iap.monthlyId,
         nameRes = R.string.paywall_plan_monthly,
         noteRes = R.string.paywall_plan_monthly_note,
-        priceRes = R.string.paywall_price_monthly,
         unitRes = R.string.paywall_unit_monthly,
         highlighted = true,
-    ),
-    LIFETIME(
-        sku = Iap.lifetimeId,
-        nameRes = R.string.paywall_plan_lifetime,
-        noteRes = R.string.paywall_plan_lifetime_note,
-        priceRes = R.string.paywall_price_lifetime,
-        unitRes = R.string.paywall_unit_lifetime,
     ),
 }
 
@@ -225,6 +222,7 @@ enum class PaywallPlan(
 private fun PlanRow(
     plan: PaywallPlan,
     selected: Boolean,
+    price: String,
     onSelect: () -> Unit,
 ) {
     Box {
@@ -258,7 +256,7 @@ private fun PlanRow(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = stringResource(plan.priceRes),
+                    text = price,
                     style = AppType.titleM,
                     color = AppColors.textPrimary,
                 )
@@ -329,17 +327,11 @@ private fun FooterLink(text: String, onClick: () -> Unit) {
     )
 }
 
-/** Billing seam — intentionally inert until the purchase flow is attached. */
-private fun onPurchase(plan: PaywallPlan) = Unit
-
-private fun onRestore() = Unit
-
 private val PAYWALL_BENEFITS = listOf(
-    R.string.paywall_benefit_templates,
-    R.string.paywall_benefit_tools,
-    R.string.paywall_benefit_no_ads,
-    R.string.paywall_benefit_quality,
-    R.string.paywall_benefit_priority,
+    R.string.paywall_benefit_remove_ads,
+    R.string.paywall_benefit_faster,
+    R.string.paywall_benefit_no_watermark,
+    R.string.paywall_benefit_premium_templates,
 )
 
 private const val PRIVACY_URL = "https://doc-hosting.flycricket.io/vezora-ai-photo-generator-privacy-policy/df218ef2-ab65-47d7-bfaa-fc12a3b1f948/privacy"

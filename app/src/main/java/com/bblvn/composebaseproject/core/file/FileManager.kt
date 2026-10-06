@@ -208,9 +208,13 @@ object FileManager {
      * callers fall back to the clean file rather than blocking the export entirely.
      */
     private suspend fun stageWatermarked(source: File): File? = runCatching {
-        val bitmap = ImageUtils.decodeSampled(source, MAX_EXPORT_EDGE)
+        val decoded = ImageUtils.decodeSampled(source, WATERMARKED_EXPORT_EDGE)
             ?: return@runCatching null
-        val marked = ImageUtils.applyWatermark(appContext, bitmap, R.drawable.watermark_ai_photo)
+        // decodeSampled chỉ hạ theo luỹ thừa của 2 nên có thể còn lớn hơn HD; ép về đúng HD ở đây,
+        // TRƯỚC khi đóng dấu để cỡ watermark tính theo ảnh đã thu nhỏ.
+        val bitmap = ImageUtils.scaleToMaxEdge(decoded, WATERMARKED_EXPORT_EDGE)
+        if (bitmap !== decoded) decoded.recycle()
+        val marked = ImageUtils.applyWatermark(bitmap)
         val target = File(shareCacheDir().apply { mkdirs() }, "export_${System.nanoTime()}.jpg")
         FileOutputStream(target).use { out ->
             marked.compress(Bitmap.CompressFormat.JPEG, EXPORT_QUALITY, out)
@@ -297,9 +301,12 @@ object FileManager {
 
     private const val DEFAULT_BUFFER = 8 * 1024
 
-    /** Exports stay well under the 4096px most galleries downscale to anyway. */
-    private const val MAX_EXPORT_EDGE = 2048
-    private const val EXPORT_QUALITY = 92
+    /**
+     * Ảnh xuất CÓ watermark (user free) bị nén xuống HD: cạnh dài tối đa 1280px (720p). Ảnh sạch cho
+     * user PRO / vừa xem reward giữ nguyên độ phân giải gốc — "lưu ảnh độ phân giải cao" là quyền lợi PRO.
+     */
+    private const val WATERMARKED_EXPORT_EDGE = 1280
+    private const val EXPORT_QUALITY = 90
 
     /** Staged export copies older than this are swept at startup. */
     private const val STALE_EXPORT_MS = 60 * 60 * 1000L

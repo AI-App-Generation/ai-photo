@@ -189,7 +189,9 @@ fun App() {
     ) { target ->
         when (target) {
             AppScreen.Splash -> SplashScreen(
-                onNext = { goTo(AppScreen.Language) }
+                onNext = { goTo(AppScreen.Language) },
+                // Đã trả phí: vào thẳng app, bỏ qua cả phễu Language / Survey / Onboarding.
+                onPremiumReady = { goTo(AppScreen.Main) },
             )
             AppScreen.Language -> LanguageScreen(
                 onNext = { goTo(AppScreen.Survey) }
@@ -204,6 +206,11 @@ fun App() {
                 }
             )
             AppScreen.Main -> {
+                // Từ đây Welcome Back mới được phép hiện khi user quay lại app.
+                LaunchedEffect(Unit) {
+                    AdsPolicy.hasReachedHome = true
+                    AdsPolicy.preloadHomeInters()
+                }
                 MainContent()
             }
         }

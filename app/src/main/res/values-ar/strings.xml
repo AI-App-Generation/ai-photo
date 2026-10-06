@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Photo</string>
+    <string name="app_name">Vezora</string>
 
     <string name="ok">موافق</string>
     <string name="cancel">إلغاء</string>
@@ -55,4 +55,77 @@
     <string name="welcome_back_title">مرحبًا بعودتك!</string>
     <string name="welcome_back_body">استوديو الذكاء الاصطناعي جاهز. تابع من حيث توقفت.</string>
     <string name="welcome_back_continue">متابعة</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">إلغاء التثبيت</string>
+    <string name="uninstall_splash_loading">لحظة من فضلك…</string>
+    <string name="uninstall_notice_title">هل ستغادر بهذه السرعة؟</string>
+    <string name="uninstall_notice_desc_empty">كل ما تنشئه بالذكاء الاصطناعي موجود داخل هذا التطبيق.</string>
+    <string name="uninstall_notice_desc">لديك %1$d إبداعات محفوظة على هذا الجهاز. سيؤدي إلغاء التثبيت إلى حذفها نهائيًا.</string>
+    <string name="uninstall_keep_app">الاحتفاظ بالتطبيق</string>
+    <string name="uninstall_continue">متابعة إلغاء التثبيت</string>
+    <string name="uninstall_survey_title">لماذا ستغادر؟</string>
+    <string name="uninstall_survey_subtitle">إجابتك تساعدنا على تحسين التطبيق.</string>
+    <string name="uninstall_reason_quality">النتائج ليست جيدة بما يكفي</string>
+    <string name="uninstall_reason_slow">يستغرق وقتًا طويلًا</string>
+    <string name="uninstall_reason_ads">إعلانات كثيرة جدًا</string>
+    <string name="uninstall_reason_price">السعر مرتفع جدًا</string>
+    <string name="uninstall_reason_better">وجدت تطبيقًا أفضل</string>
+    <string name="uninstall_reason_other">سبب آخر</string>
+    <string name="uninstall_confirm">إلغاء التثبيت</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">رصيد غير كافٍ</string>
+    <string name="generating_error_credits_title">رصيد غير كافٍ</string>
+    <string name="generating_error_credits_hint">تحتاج إلى رصيد واحد لإنشاء صورة.</string>
+    <string name="credits_balance_description">%1$d رصيد</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">مشاهدة إعلان</string>
+    <string name="reward_unlock_pro">فتح مع PRO</string>
+    <string name="reward_view_plans">عرض الخطط</string>
+    <string name="reward_template_title">استخدم هذا القالب PRO مرة واحدة</string>
+    <string name="reward_template_message">شاهد إعلانًا قصيرًا لفتح هذا القالب لعملية إنشاء واحدة.</string>
+    <string name="reward_tool_title">جرّب هذه الأداة PRO مرة واحدة</string>
+    <string name="reward_tool_message">شاهد إعلانًا قصيرًا لاستخدام هذه الأداة لعملية إنشاء واحدة.</string>
+    <string name="reward_credits_title">نفد الرصيد</string>
+    <string name="reward_credits_message">شاهد إعلانًا قصيرًا لتحصل على رصيد واحد وتواصل الإنشاء.</string>
+    <string name="reward_save_title">حفظ بدون علامة مائية</string>
+    <string name="reward_save_message">شاهد إعلانًا قصيرًا لحفظ هذه الصورة بدون علامة مائية، أو اشترك في PRO لإزالتها نهائيًا.</string>
+    <string name="reward_save_with_watermark">حفظ مع علامة مائية</string>
+    <string name="reward_ad_unavailable">لا يتوفر أي إعلان حاليًا. يرجى المحاولة لاحقًا.</string>
+    <string name="reward_incomplete">شاهد الإعلان كاملًا للحصول على المكافأة.</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">إزالة جميع الإعلانات في التطبيق</string>
+    <string name="paywall_benefit_faster">إنشاء صور أسرع</string>
+    <string name="paywall_benefit_no_watermark">إزالة العلامات المائية وحفظ الصور بدقة عالية</string>
+    <string name="paywall_benefit_premium_templates">فتح القوالب المميزة</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">Vezora PRO</string>
+    <string name="paywall_subtitle">افتح جميع القوالب والأدوات</string>
+    <string name="paywall_close">إغلاق</string>
+    <string name="paywall_continue">متابعة</string>
+    <string name="paywall_restore">استعادة</string>
+    <string name="paywall_terms">الشروط</string>
+    <string name="paywall_privacy">الخصوصية</string>
+    <string name="paywall_most_popular">الأكثر شيوعًا</string>
+    <string name="paywall_plan_weekly">أسبوعي</string>
+    <string name="paywall_plan_weekly_note">جرّبه</string>
+    <string name="paywall_unit_weekly">في الأسبوع</string>
+    <string name="paywall_plan_monthly">شهري</string>
+    <string name="paywall_plan_monthly_note">أفضل قيمة</string>
+    <string name="paywall_unit_monthly">في الشهر</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">احصل على رصيد</string>
+    <string name="credit_store_subtitle">كل إنشاء صورة يكلّف رصيدًا واحدًا. الرصيد لا تنتهي صلاحيته.</string>
+    <string name="credit_store_balance">الرصيد: %1$d</string>
+    <string name="credit_store_pack">%1$d رصيد</string>
+    <string name="credit_store_best_value">أفضل قيمة</string>
+    <string name="credit_store_purchased">تمت إضافة +%1$d رصيد</string>
+    <string name="credits_add_description">احصل على المزيد من الرصيد</string>
+    <string name="reward_buy_credits">احصل على رصيد</string>
+    <string name="reward_credits_message_no_ad">لقد استخدمت رصيد الإعلان المجاني. احصل على رصيد لمتابعة الإنشاء.</string>
 </resources>

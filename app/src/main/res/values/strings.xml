@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Vezora</string>
+    <string name="facebook_app_id">2125791808013444</string>
+    <string name="facebook_client_token">194e9e2a036dc3da92a8915a8f53e03d</string>
 
     <!-- Fill in per-app when forking from this template (Facebook Developer Console). -->
-    <string name="facebook_app_id"></string>
-    <string name="facebook_client_token"></string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
@@ -28,7 +28,7 @@
     <string name="select_region">Select region</string>
 
     <!-- Home - Discover -->
-    <string name="home_app_title">AI Photo</string>
+    <string name="home_app_title">Vezora</string>
     <string name="home_account_pro">PRO</string>
     <string name="home_banner_before_after">BEFORE / AFTER</string>
     <string name="home_quick_tools">Quick tools</string>
@@ -108,7 +108,7 @@
     <string name="result_action_share">Share</string>
     <string name="result_action_regenerate">Regenerate</string>
     <string name="result_action_try_other">Try another style</string>
-    <string name="result_watermark_notice">Created with AI Photo</string>
+    <string name="result_watermark_notice">Created with Vezora</string>
     <string name="result_share_chooser">Share image</string>
     <string name="result_missing_title">Result unavailable</string>
     <string name="result_missing_message">This result could not be found. Try creating another image.</string>
@@ -139,10 +139,10 @@
     <string name="picker_empty_title">No photos yet</string>
     <string name="picker_empty_message">This album has no pictures. Take a photo to get started.</string>
     <string name="picker_permission_title">Photo access needed</string>
-    <string name="picker_permission_message">AI Photo only reads the picture you choose.</string>
+    <string name="picker_permission_message">Vezora only reads the picture you choose.</string>
     <string name="picker_permission_grant">Allow access</string>
     <string name="picker_permission_settings">Open settings</string>
-    <string name="picker_partial_access">You have shared only some photos with AI Photo.</string>
+    <string name="picker_partial_access">You have shared only some photos with Vezora.</string>
     <string name="picker_select_more">Select more</string>
     <string name="picker_error_copy_failed">Could not open that photo</string>
     <string name="picker_error_camera">No camera app available</string>
@@ -216,7 +216,7 @@
     <string name="profile_title">Profile</string>
     <string name="profile_plan_free">Free plan</string>
     <string name="profile_plan_free_note">Upgrade to unlock everything</string>
-    <string name="profile_plan_pro">AI Photo PRO</string>
+    <string name="profile_plan_pro">Vezora PRO</string>
     <string name="profile_plan_pro_note">Active</string>
     <string name="profile_upgrade">Upgrade</string>
     <string name="profile_stat_created">Created</string>
@@ -240,7 +240,7 @@
     <string name="profile_privacy">Privacy policy</string>
     <string name="profile_terms">Terms of use</string>
     <string name="profile_version">Version</string>
-    <string name="paywall_title">AI Photo PRO</string>
+    <string name="paywall_title">Vezora PRO</string>
     <string name="paywall_subtitle">Unlock every template and tool</string>
     <string name="paywall_close">Close</string>
     <string name="paywall_continue">Continue</string>
@@ -311,4 +311,61 @@
     <string name="welcome_back_title">Welcome back!</string>
     <string name="welcome_back_body">Your AI studio is ready. Pick up right where you left off.</string>
     <string name="welcome_back_continue">Continue</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">Uninstall</string>
+    <string name="uninstall_splash_loading">Just a moment…</string>
+    <string name="uninstall_notice_title">Leaving so soon?</string>
+    <string name="uninstall_notice_desc_empty">Everything you create with AI lives inside this app.</string>
+    <string name="uninstall_notice_desc">You have %1$d creations saved on this device. Uninstalling deletes them for good.</string>
+    <string name="uninstall_keep_app">Keep the app</string>
+    <string name="uninstall_continue">Continue uninstalling</string>
+    <string name="uninstall_survey_title">Why are you leaving?</string>
+    <string name="uninstall_survey_subtitle">Your answer helps us make the app better.</string>
+    <string name="uninstall_reason_quality">The results are not good enough</string>
+    <string name="uninstall_reason_slow">It takes too long</string>
+    <string name="uninstall_reason_ads">Too many ads</string>
+    <string name="uninstall_reason_price">It costs too much</string>
+    <string name="uninstall_reason_better">I found a better app</string>
+    <string name="uninstall_reason_other">Something else</string>
+    <string name="uninstall_confirm">Uninstall</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">Not enough credits</string>
+    <string name="generating_error_credits_title">Not enough credits</string>
+    <string name="generating_error_credits_hint">You need 1 credit to create an image.</string>
+    <string name="credits_balance_description">%1$d credits</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">Watch ad</string>
+    <string name="reward_unlock_pro">Unlock with PRO</string>
+    <string name="reward_view_plans">View plans</string>
+    <string name="reward_template_title">Use this PRO template once</string>
+    <string name="reward_template_message">Watch a short ad to unlock this template for one creation.</string>
+    <string name="reward_tool_title">Try this PRO tool once</string>
+    <string name="reward_tool_message">Watch a short ad to use this tool for one creation.</string>
+    <string name="reward_credits_title">Out of credits</string>
+    <string name="reward_credits_message">Watch a short ad to earn 1 credit and keep creating.</string>
+    <string name="reward_save_title">Save without watermark</string>
+    <string name="reward_save_message">Watch a short ad to save this image without a watermark, or go PRO to remove it for good.</string>
+    <string name="reward_save_with_watermark">Save with watermark</string>
+    <string name="reward_ad_unavailable">No ad is available right now. Please try again later.</string>
+    <string name="reward_incomplete">Watch the whole ad to get the reward.</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">Remove all ads in the app</string>
+    <string name="paywall_benefit_faster">Faster image generation</string>
+    <string name="paywall_benefit_no_watermark">Remove watermarks &amp; save high-resolution images</string>
+    <string name="paywall_benefit_premium_templates">Unlock premium templates</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">Get credits</string>
+    <string name="credit_store_subtitle">1 image generation costs 1 credit. Credits never expire.</string>
+    <string name="credit_store_balance">Balance: %1$d credits</string>
+    <string name="credit_store_pack">%1$d credits</string>
+    <string name="credit_store_best_value">BEST VALUE</string>
+    <string name="credit_store_purchased">+%1$d credits added</string>
+    <string name="credits_add_description">Get more credits</string>
+    <string name="reward_buy_credits">Get credits</string>
+    <string name="reward_credits_message_no_ad">You have used your free ad credit. Get credits to keep creating.</string>
 </resources>

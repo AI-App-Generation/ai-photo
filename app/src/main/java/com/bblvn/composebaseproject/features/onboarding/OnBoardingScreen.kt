@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.features.onboarding
 
+import com.bblvn.composebaseproject.core.Analytics
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
@@ -90,6 +91,21 @@ private val ONBOARDING_PAGES = listOf(
     OnboardingContent(R.drawable.onboarding_03, R.string.onboarding_3_title, R.string.onboarding_3_body),
 )
 
+/**
+ * Survey đóng vai "onboarding 1" (native_onb1), nên 3 trang ở đây mang số 2, 3 và Welcome.
+ */
+private fun nativePlacementFor(page: Int): String = when (page) {
+    0 -> AdsPlacementHolder.NATIVE_ONB2
+    1 -> AdsPlacementHolder.NATIVE_ONB3
+    else -> AdsPlacementHolder.NATIVE_WELCOME
+}
+
+/** Native full chen khi bấm Next, đặt tên theo trang ĐÍCH: trang 1→2 là ob_2, 2→3 là ob_3. */
+private fun nativeFullPlacementFor(page: Int): String = when (page) {
+    0 -> AdsPlacementHolder.NATIVE_FULL_OB_2
+    else -> AdsPlacementHolder.NATIVE_FULL_OB_3
+}
+
 @Composable
 fun OnboardingScreen(onNext: () -> Unit = {}) {
     val pageCount = ONBOARDING_PAGES.size
@@ -99,7 +115,7 @@ fun OnboardingScreen(onNext: () -> Unit = {}) {
     var showNativeFull by remember { mutableStateOf(false) }
     val isAdActive by AdsLoader.isActive.collectAsState()
 
-    LogScreenView("Onboarding${pagerState.settledPage + 1}")
+    LogScreenView("onboarding_${pagerState.settledPage + 1}_view")
 
     LaunchedEffect(showNativeFull, pagerState.settledPage) {
         val blockWelcome = showNativeFull || pagerState.settledPage in setOf(0, 1)
@@ -120,6 +136,23 @@ fun OnboardingScreen(onNext: () -> Unit = {}) {
                 onNext()
             }
         }
+    }
+
+    fun logNext() {
+        val page = pagerState.currentPage + 1
+        // Trang cuối là "start" chứ không phải "next": đó là nhát bấm đưa user vào app, chỉ số
+        // hoàn thành onboarding đọc từ chính nó.
+        val suffix = if (page == pageCount) "start" else "next"
+        Analytics.log("onboarding_${page}_$suffix")
+    }
+
+    // Trang cuối ("Get started"): chen inter_onb rồi mới vào app.
+    fun finishOnboarding() {
+        AdsPolicy.showInterAd(
+            activity = activity,
+            adPlacement = AdsPlacementHolder.INTER_ONB,
+            onContinue = { navigateToNextReal() },
+        )
     }
 
     fun navigateToNext() {
@@ -160,20 +193,22 @@ fun OnboardingScreen(onNext: () -> Unit = {}) {
                 pageIndex = page,
                 pageCount = pageCount,
                 isWelcome = isLast,
-                adPlacement = if (isLast) null else AdsPlacementHolder.NATIVE,
+                adPlacement = nativePlacementFor(page),
                 isInViewport = isInViewport,
-                onNext = { if (isLast) navigateToNextReal() else navigateToNext() },
+                onNext = {
+                    // Bắn trước khi chen quảng cáo để quảng cáo nuốt luồng cũng không mất số liệu.
+                    logNext()
+                    if (isLast) finishOnboarding() else navigateToNext()
+                },
             )
         }
 
         if (showNativeFull) {
-            val placement = when (pagerState.currentPage) {
-                0 -> AdsPlacementHolder.NATIVE
-                else -> AdsPlacementHolder.NATIVE
-            }
+            val placement = nativeFullPlacementFor(pagerState.currentPage)
             NativeAdOverlay(
                 layoutResId = R.layout.frame_ad_full,
                 closeDelaySeconds = 0,
+                fullScreen = true,
                 onClose = { navigateToNextReal() }
             ) { container, shimmer ->
                 AdsPolicy.bindNativeAd(
@@ -239,19 +274,20 @@ private fun OnboardingPage(
         )
         Box(Modifier.fillMaxSize().rootScrim(startFraction = 0.5f))
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .navigationBarsPadding()
-        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Spacer(Modifier.weight(1f))
 
+            // Tấm phủ nằm ở khối này để che trọn cả chữ lẫn ô native bên dưới, kể cả vùng thanh điều
+            // hướng: ad không fill thì ô đó ẩn đi, không có tấm phủ sẽ hở ảnh nền ở đáy.
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    // Solid backing that rises with the copy, so it stays legible over busy
-                    // artwork whether or not the native ad below pushes it up.
                     .drawBehind { drawRect(AppGradients.fadeToRoot(TEXT_FADE_HEIGHT.toPx())) }
+                    .navigationBarsPadding()
+            ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(top = TEXT_FADE_HEIGHT - 24.dp)
                     .padding(start = 24.dp, end = 24.dp, bottom = 20.dp)
                     .graphicsLayer {
@@ -306,8 +342,10 @@ private fun OnboardingPage(
             if (adPlacement != null && isInViewport) {
                 ComposeNativeAdFrame(
                     adPlacement = adPlacement,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    reloadOnResume = false
                 )
+            }
             }
         }
     }

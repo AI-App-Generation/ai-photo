@@ -1,5 +1,7 @@
 package com.bblvn.composebaseproject.features.home
 
+import androidx.compose.foundation.lazy.itemsIndexed
+import com.bblvn.composebaseproject.core.Analytics
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.animateDpAsState
@@ -120,11 +122,14 @@ fun BannerCarousel(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize(),
                 pageSpacing = 12.dp,
-                key = { index -> slides[index].template.id },
+                key = { index -> "${slides[index].template.id}_$index" },
             ) { page ->
                 BannerCard(
                     slide = slides[page],
-                    onClick = { onTemplateClick(slides[page].template.id) },
+                    onClick = {
+                        Analytics.logTemplateClick(slides[page].template, "home_banner")
+                        onTemplateClick(slides[page].template.id)
+                    },
                 )
             }
 
@@ -312,7 +317,8 @@ fun CategoryRow(
             contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(items = templates, key = { it.id }) { template ->
+            // Catalog có template trùng id (kể cả trong cùng một danh sách); khoá phải kèm vị trí, nếu không Compose báo trùng khoá và crash.
+            itemsIndexed(items = templates, key = { index, template -> "${template.id}_$index" }) { _, template ->
                 TemplateCard(
                     imageModel = template.displayImageUrl,
                     name = template.name,
@@ -324,7 +330,10 @@ fun CategoryRow(
                         null
                     },
                     seed = template.id,
-                    onClick = { onTemplateClick(template.id) },
+                    onClick = {
+                        Analytics.logTemplateClick(template, "home_row")
+                        onTemplateClick(template.id)
+                    },
                 )
             }
         }

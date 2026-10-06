@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Màu cho layout quảng cáo (XML, ngoài Compose). Giá trị phản chiếu AppColors trong
+    ui/theme/Color.kt — sửa palette ở đó thì sửa ở đây theo.
+-->
+<resources>
+    <color name="ad_root">#FF07070B</color>        <!-- AppColors.bgRoot -->
+    <color name="ad_surface">#FF121218</color>     <!-- AppColors.bgSurface -->
+    <color name="ad_elevated">#FF1C1C26</color>    <!-- AppColors.bgElevated -->
+    <color name="ad_stroke">#14FFFFFF</color>      <!-- AppColors.strokeSoft (white 8%) -->
+    <color name="ad_skeleton">#1FFFFFFF</color>    <!-- khối placeholder khi đang tải (white 12%) -->
+    <color name="ad_badge_bg">#26FFFFFF</color>
+    <color name="ad_text_primary">#FFFFFFFF</color>
+    <color name="ad_text_secondary">#FFA5A5B8</color>  <!-- AppColors.textSecondary -->
+    <color name="ad_accent_violet">#FF7C5CFF</color>
+    <color name="ad_accent_magenta">#FFFF4FD8</color>
+    <color name="ad_ripple">#33FFFFFF</color>
+</resources>

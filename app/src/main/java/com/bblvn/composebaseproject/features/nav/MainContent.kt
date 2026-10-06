@@ -1,5 +1,10 @@
 package com.bblvn.composebaseproject.features.nav
 
+import com.bblvn.composebaseproject.core.Analytics
+import com.bblvn.composebaseproject.features.paywall.CreditStoreScreen
+import com.bblvn.composebaseproject.ui.components.LocalOpenCreditStore
+import androidx.compose.runtime.CompositionLocalProvider
+import com.bblvn.composebaseproject.core.AppCapability
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -9,8 +14,16 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -19,6 +32,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -28,8 +44,13 @@ import androidx.navigation.navArgument
 import com.bblvn.composebaseproject.FadeSlideHorizontal
 import com.bblvn.composebaseproject.FadeSlideHorizontalPop
 import com.bblvn.composebaseproject.FadeSlideUp
+import com.bblvn.composebaseproject.ads.AdsLoader
+import com.bblvn.composebaseproject.ads.InterAdOutcome
+import com.bblvn.composebaseproject.ads.AdsPolicy
+import com.bblvn.composebaseproject.ads.AdsPlacementHolder
 import com.bblvn.composebaseproject.FadeSlideUpPop
 import com.bblvn.composebaseproject.core.file.FileManager
+import com.bblvn.composebaseproject.core.SettingManager
 import com.bblvn.composebaseproject.corefeatures.generation.GenerationDraft
 import com.bblvn.composebaseproject.data.domain.ToolType
 import com.bblvn.composebaseproject.features.adjust.AdjustPhotoScreen
@@ -51,7 +72,13 @@ import com.bblvn.composebaseproject.features.tools.ToolsHubScreen
 import com.bblvn.composebaseproject.features.tryonalign.TryOnAlignScreen
 import com.bblvn.composebaseproject.ui.components.AiPhotoNavItems
 import com.bblvn.composebaseproject.ui.components.BottomNavBar
+import com.bblvn.composebaseproject.ui.components.ads.HomeCollapsingAd
+import com.bblvn.composebaseproject.R
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.BackHandler
+import com.bblvn.composebaseproject.ui.components.ads.NativeAdOverlay
 import com.bblvn.composebaseproject.ui.theme.AppColors
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -64,7 +91,40 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainContent() {
     val nav = rememberNavController()
+    val activity = LocalActivity.current
 
+    // inter_open_template / inter_open_tool: chen inter trước khi mở màn chi tiết, dùng chung giãn
+    // cách 30s với inter_tab (cùng mode 1, không force). Lỗi hoặc bị chặn thì mở luôn.
+    fun openTemplate(templateId: String) {
+        val host = activity
+        if (host == null) {
+            nav.goOnce(Routes.templateDetail(templateId))
+            return
+        }
+        AdsPolicy.showInterAd(
+            activity = host,
+            adPlacement = AdsPlacementHolder.INTER_OPEN_TEMPLATE,
+            onContinue = { nav.goOnce(Routes.templateDetail(templateId)) },
+        )
+    }
+
+    fun openTool(toolName: String) {
+        // Mỗi tool một event không param (tool_enhance_click, tool_remove_bg_click…). Bắn trước khi
+        // chen inter để quảng cáo có nuốt luồng cũng không mất lượt bấm.
+        Analytics.log("tool_${Analytics.snakeCase(toolName)}_click")
+        val host = activity
+        if (host == null) {
+            nav.goOnce(Routes.toolDetail(toolName))
+            return
+        }
+        AdsPolicy.showInterAd(
+            activity = host,
+            adPlacement = AdsPlacementHolder.INTER_OPEN_TOOL,
+            onContinue = { nav.goOnce(Routes.toolDetail(toolName)) },
+        )
+    }
+
+    CompositionLocalProvider(LocalOpenCreditStore provides { nav.goOnce(Routes.CREDIT_STORE) }) {
     NavHost(
         navController = nav,
         startDestination = Routes.MAIN,
@@ -79,7 +139,7 @@ fun MainContent() {
         modifier = Modifier.fillMaxSize().background(AppColors.bgRoot),
     ) {
         composable(Routes.MAIN) {
-            TabShell(nav)
+            TabShell(nav, onOpenTemplate = ::openTemplate, onOpenTool = ::openTool)
         }
 
         composable(
@@ -93,7 +153,7 @@ fun MainContent() {
             CategoryAllScreen(
                 categoryId = entry.arguments?.getInt(Routes.ARG_CATEGORY_ID) ?: 0,
                 onBack = nav::goBackOnce,
-                onTemplateClick = { nav.goOnce(Routes.templateDetail(it)) },
+                onTemplateClick = ::openTemplate,
             )
         }
 
@@ -117,7 +177,7 @@ fun MainContent() {
                     onPickPhoto = photoSource::open,
                     onStart = { nav.goOnce(Routes.adjust(0)) },
                     onOpenPaywall = { nav.goOnce(Routes.PAYWALL) },
-                    onTemplateClick = { nav.goOnce(Routes.templateDetail(it)) },
+                    onTemplateClick = ::openTemplate,
                 )
                 PhotoSourceSheet(state = photoSource, onPicked = { nav.continueAfterPick() })
             }
@@ -300,7 +360,67 @@ fun MainContent() {
             popEnterTransition = { FadeSlideUpPop.first },
             popExitTransition = { FadeSlideUpPop.second },
         ) {
-            PaywallScreen(onClose = nav::goBackOnce)
+            // native_paywall_close: đóng paywall mà chưa mua thì chen native full rồi mới thoát. Cả nút X
+            // lẫn nút Back hệ thống đều đi qua đây. Đã mua / premium / ads tắt thì thoát luôn.
+            var showCloseNative by remember { mutableStateOf(false) }
+            val paywallHost = activity
+
+            fun leavePaywall() {
+                showCloseNative = false
+                nav.goBackOnce()
+            }
+
+            fun closePaywall() {
+                if (paywallHost == null || AppCapability.isPremium.value || !AdsLoader.isAdsEnabled()) {
+                    leavePaywall()
+                } else {
+                    showCloseNative = true
+                }
+            }
+
+            // Nạp sẵn ngay khi mở paywall để lúc đóng không phải chờ.
+            LaunchedEffect(Unit) { AdsPolicy.loadAd(AdsPlacementHolder.NATIVE_PAYWALL_CLOSE) }
+
+            // Mua xong (premium bật ngay trong phiên) thì đóng paywall, không chen native.
+            val isPremiumNow by AppCapability.isPremium.collectAsState()
+            LaunchedEffect(isPremiumNow) { if (isPremiumNow) leavePaywall() }
+
+            BackHandler { closePaywall() }
+            // Đang xem native full mà bấm Back = bỏ qua nó và thoát.
+            BackHandler(enabled = showCloseNative) { leavePaywall() }
+
+            Box(Modifier.fillMaxSize()) {
+                PaywallScreen(onClose = ::closePaywall)
+
+                if (showCloseNative && paywallHost != null) {
+                    NativeAdOverlay(
+                        layoutResId = R.layout.frame_ad_full,
+                        closeDelaySeconds = 1,
+                        fullScreen = true,
+                        onClose = ::leavePaywall,
+                    ) { container, shimmer ->
+                        AdsPolicy.bindNativeAd(
+                            activity = paywallHost,
+                            adPlacement = AdsPlacementHolder.NATIVE_PAYWALL_CLOSE,
+                            container = container,
+                            shimmer = shimmer,
+                            templateAdLayoutRes = R.layout.template_ad_full,
+                            // Không nạp được thì thoát luôn, không bắt user chờ.
+                            onAdFailed = ::leavePaywall,
+                        )
+                    }
+                }
+            }
+        }
+
+        composable(
+            route = Routes.CREDIT_STORE,
+            enterTransition = { FadeSlideUp.first },
+            exitTransition = { FadeSlideUp.second },
+            popEnterTransition = { FadeSlideUpPop.first },
+            popExitTransition = { FadeSlideUpPop.second },
+        ) {
+            CreditStoreScreen(onClose = nav::goBackOnce)
         }
 
         composable(
@@ -319,6 +439,7 @@ fun MainContent() {
             )
         }
     }
+    }
 }
 
 /**
@@ -328,12 +449,79 @@ fun MainContent() {
  * when the user comes back to it (R3.5) — without it Home jumps to the top on every switch.
  */
 @Composable
-private fun TabShell(nav: NavHostController) {
+private fun TabShell(
+    nav: NavHostController,
+    onOpenTemplate: (String) -> Unit,
+    onOpenTool: (String) -> Unit,
+) {
     val holder = rememberSaveableStateHolder()
     val scope = rememberCoroutineScope()
     var selected by rememberSaveable { mutableStateOf(Routes.TAB_HOME) }
 
+    // inter_tab → native_full_inter, CHỈ khi đổi tab bằng nút trên tab bar (các nút khác như "see all
+    // tools" ở Home đổi tab thẳng). Tab chỉ đổi sau khi cả chuỗi quảng cáo kết thúc.
+    val activity = LocalActivity.current
+    var pendingTab by remember { mutableStateOf<String?>(null) }
+    var showNativeFullInter by remember { mutableStateOf(false) }
+    var tabAdFlowBusy by remember { mutableStateOf(false) }
+
+    fun finishTabAdFlow() {
+        if (!tabAdFlowBusy) return
+        val target = pendingTab
+        showNativeFullInter = false
+        pendingTab = null
+        tabAdFlowBusy = false
+        if (target != null) selected = target
+    }
+
+    fun onTabBarSelect(tab: String) {
+        if (tab == selected || tabAdFlowBusy) return
+        val host = activity
+        if (host == null) {
+            selected = tab
+            return
+        }
+        pendingTab = tab
+        tabAdFlowBusy = true
+        AdsPolicy.showInterAd(
+            activity = host,
+            adPlacement = AdsPlacementHolder.INTER_TAB,
+            onContinue = {},
+            onOutcome = { outcome ->
+                // Chỉ chen native full khi inter thật sự đã hiện và đóng; bị chặn / lỗi thì đổi tab luôn.
+                if (outcome == InterAdOutcome.CLOSED && AdsLoader.isAdsEnabled()) {
+                    showNativeFullInter = true
+                } else {
+                    finishTabAdFlow()
+                }
+            },
+        )
+    }
+
+    // Back khi đang xem native full = bỏ qua nó và đổi tab.
+    BackHandler(enabled = showNativeFullInter) { finishTabAdFlow() }
+
+    // Ad đáy (native thu gọn về banner) là sibling nằm dưới nav bar. Chờ một nhịp sau khi vào tab
+    // cho màn kịp vẽ rồi mới hiện, đỡ giật layout.
+    val isAdsActive by AdsLoader.isActive.collectAsState()
+    var adGateReady by remember { mutableStateOf(false) }
+    LaunchedEffect(isAdsActive) {
+        if (!isAdsActive || adGateReady) return@LaunchedEffect
+        delay(500L)
+        adGateReady = true
+    }
+    val showBottomAd = isAdsActive && adGateReady
+    val density = LocalDensity.current
+    var adHeight by remember { mutableStateOf(0.dp) }
+
     Box(modifier = Modifier.fillMaxSize().background(AppColors.bgRoot)) {
+        // Nội dung các tab co lại đúng bằng chiều cao ad (đang co giãn theo animation). Nav bar vẫn
+        // đè lên đáy nội dung như cũ nên các Spacer cuối danh sách giữ nguyên.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = if (showBottomAd) adHeight else 0.dp),
+        ) {
         AnimatedContent(
             targetState = selected,
             transitionSpec = {
@@ -345,15 +533,15 @@ private fun TabShell(nav: NavHostController) {
             holder.SaveableStateProvider(tab) {
                 when (tab) {
                     Routes.TAB_HOME -> AiPhotoHomeScreen(
-                        onTemplateClick = { nav.goOnce(Routes.templateDetail(it)) },
+                        onTemplateClick = onOpenTemplate,
                         onCategoryAll = { nav.goOnce(Routes.categoryAll(it)) },
-                        onToolClick = { nav.goOnce(Routes.toolDetail(it)) },
+                        onToolClick = onOpenTool,
                         onOpenTools = { selected = Routes.TAB_TOOLS },
                         onOpenPaywall = { nav.goOnce(Routes.PAYWALL) },
                     )
 
                     Routes.TAB_TOOLS -> ToolsHubScreen(
-                        onToolClick = { nav.goOnce(Routes.toolDetail(it)) },
+                        onToolClick = onOpenTool,
                         onOpenPaywall = { nav.goOnce(Routes.PAYWALL) },
                     )
 
@@ -365,6 +553,7 @@ private fun TabShell(nav: NavHostController) {
                         onShareRequested = { file ->
                             scope.launch { FileManager.clearStaleExports() }
                         },
+                        onOpenPaywall = { nav.goOnce(Routes.PAYWALL) },
                     )
 
                     else -> ProfileScreen(
@@ -374,13 +563,51 @@ private fun TabShell(nav: NavHostController) {
                 }
             }
         }
+        }
 
-        BottomNavBar(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            items = AiPhotoNavItems,
-            selectedId = selected,
-            onSelect = { selected = it },
-        )
+        // Nav bar và ad là hai sibling trong một Column: ad cao lên thì nav bar bị đẩy lên, ad co
+        // xuống thì nav bar trả về chỗ cũ. Nav bar không biết gì về ad.
+        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+            BottomNavBar(
+                // Khi có ad bên dưới, ad lo padding thanh điều hướng hệ thống; nav bar tự áp
+                // navigationBarsPadding() nên phải "tiêu thụ" inset trước để nó không đệm đôi.
+                modifier = if (showBottomAd) {
+                    Modifier.consumeWindowInsets(WindowInsets.navigationBars)
+                } else {
+                    Modifier
+                },
+                items = AiPhotoNavItems,
+                selectedId = selected,
+                onSelect = ::onTabBarSelect,
+            )
+            if (showBottomAd) {
+                HomeCollapsingAd(
+                    tabKey = selected,
+                    modifier = Modifier.onSizeChanged { size ->
+                        adHeight = with(density) { size.height.toDp() }
+                    },
+                )
+            }
+        }
+
+        if (showNativeFullInter && activity != null) {
+            NativeAdOverlay(
+                layoutResId = R.layout.frame_ad_full,
+                closeDelaySeconds = 1,
+                fullScreen = true,
+                onClose = ::finishTabAdFlow,
+            ) { container, shimmer ->
+                AdsPolicy.bindNativeAd(
+                    activity = activity,
+                    adPlacement = AdsPlacementHolder.NATIVE_FULL_INTER,
+                    container = container,
+                    shimmer = shimmer,
+                    templateAdLayoutRes = R.layout.template_ad_full,
+                    // Không nạp được thì đổi tab luôn, không bắt user chờ.
+                    onAdFailed = ::finishTabAdFlow,
+                )
+            }
+        }
     }
 }
 

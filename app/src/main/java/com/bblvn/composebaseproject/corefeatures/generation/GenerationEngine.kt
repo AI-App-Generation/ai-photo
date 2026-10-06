@@ -3,6 +3,7 @@ package com.bblvn.composebaseproject.corefeatures.generation
 import android.graphics.BitmapFactory
 import android.util.Log
 import com.bblvn.composebaseproject.core.SettingManager
+import com.bblvn.composebaseproject.core.AppCapability
 import com.bblvn.composebaseproject.core.file.FileManager
 import com.bblvn.composebaseproject.corefeatures.premium.PremiumManager
 import com.bblvn.composebaseproject.data.api.ApiException
@@ -71,6 +72,18 @@ object GenerationEngine {
     var currentCreationId: String? = null
         private set
 
+    /** Lượt đang chạy đã bị trừ credit chưa, để hoàn đúng một lần khi nó thất bại. */
+    @Volatile
+    private var charged = false
+
+    /** Khoá lượt mở khoá PRO đã tiêu thụ cho lượt đang chạy (null nếu không dùng lượt nào). */
+    @Volatile
+    private var consumedUnlockKey: String? = null
+
+    /** Đã gửi task lên Newport chưa. Từ lúc này chi phí API đã phát sinh nên huỷ không hoàn credit. */
+    @Volatile
+    private var submitted = false
+
     fun init(appScope: CoroutineScope) {
         if (::scope.isInitialized) return
         scope = appScope
@@ -85,6 +98,29 @@ object GenerationEngine {
     /** Starts a run. Returns false when one is already in flight. */
     fun start(request: GenerationRequest): Boolean {
         if (job?.isActive == true) return false
+
+        // Trừ credit TRƯỚC khi chạy: mỗi lượt gọi API là chi phí thật. Mọi đường vào (tạo mới, thử
+        // lại, Regenerate) đều đi qua đây nên chỉ cần trừ ở một chỗ. Giao diện đã chặn từ sớm bằng
+        // AppCapability.canAffordGeneration(); đây là chốt cuối khi hai nơi tranh nhau số dư.
+        if (!AppCapability.trySpendForGeneration()) {
+            currentRequest = request
+            _state.value = GenerationState.Failed(
+                creationId = null,
+                reason = FailureReason.INSUFFICIENT_CREDITS,
+            )
+            return false
+        }
+        charged = true
+        submitted = false
+
+        // Template/tool PRO mở bằng lượt xem quảng cáo thì tiêu thụ một lượt ở đây. Premium thật sự
+        // không cần; mục miễn phí không có lượt nào trong danh sách nên không bị đụng tới.
+        consumedUnlockKey = null
+        if (!AppCapability.isPremium.value) {
+            val key = AppCapability.unlockKeyFor(request.type, request.sourceId)
+            if (AppCapability.consumeUnlock(key)) consumedUnlockKey = key
+        }
+
         currentRequest = request
         _state.value = GenerationState.Uploading(0, request.imagePaths.size)
         job = scope.launch { execute(request) }
@@ -112,6 +148,13 @@ object GenerationEngine {
      */
     fun cancel() {
         val creationId = currentCreationId
+        // Huỷ trước khi gửi task thì hoàn credit; sau khi gửi thì chi phí đã phát sinh nên không hoàn.
+        if (submitted) {
+            charged = false
+            consumedUnlockKey = null
+        } else {
+            refundIfCharged()
+        }
         job?.cancel()
         job = null
         _state.value = GenerationState.Idle
@@ -172,6 +215,8 @@ object GenerationEngine {
                     fail(creationId, request, classify(error, FailureReason.SUBMIT_FAILED), error)
                     return
                 }
+
+            submitted = true
 
             // Persist NOW, with the taskId, so the run survives a process kill (Risks #7) and the
             // Creations grid shows a "processing" card immediately.
@@ -293,6 +338,9 @@ object GenerationEngine {
         FileManager.delete(FileManager.cacheFile("upload_${creationId}_1.jpg").absolutePath)
 
         currentCreationId = creationId
+        // Thành công: credit và lượt mở khoá đã được dùng, không còn gì để hoàn.
+        charged = false
+        consumedUnlockKey = null
         _state.value = GenerationState.Success(creationId, file.absolutePath)
         job = null
     }
@@ -340,6 +388,8 @@ object GenerationEngine {
         error: Throwable?,
     ) {
         Log.w(TAG, "generation failed: $reason", error)
+        // Lượt này không ra ảnh: hoàn credit để user thử lại mà không mất thêm.
+        refundIfCharged()
         val rowExists = CreationRepo.get(creationId) != null
         if (rowExists) {
             CreationRepo.mutate(creationId) {
@@ -368,6 +418,16 @@ object GenerationEngine {
         }
         _state.value = GenerationState.Failed(creationId, reason, error?.message)
         job = null
+    }
+
+    /** Hoàn credit của lượt đang chạy, nếu nó đã bị trừ và chưa hoàn. Gọi nhiều lần vẫn chỉ hoàn một lần. */
+    private fun refundIfCharged() {
+        if (charged) {
+            charged = false
+            AppCapability.refundGeneration()
+        }
+        consumedUnlockKey?.let { AppCapability.refundUnlock(it) }
+        consumedUnlockKey = null
     }
 
     /**
@@ -407,6 +467,8 @@ object GenerationEngine {
         pending.forEach { creation ->
             val taskId = creation.taskId
             if (taskId.isNullOrBlank()) {
+                // Chết trước khi gửi task lên Newport: chưa tốn chi phí API nên hoàn credit đã trừ.
+                AppCapability.refundGeneration()
                 CreationRepo.markInterrupted(creation.id, FailureReason.INTERRUPTED.name)
                 return@forEach
             }

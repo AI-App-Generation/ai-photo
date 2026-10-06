@@ -68,6 +68,8 @@ fun ZoomableImage(
     resetKey: Any? = null,
     doubleTapToReset: Boolean = true,
     onTransformChange: ((ImageTransform) -> Unit)? = null,
+    /** Drawn INSIDE the zoom/pan layer, so it moves and scales with the picture. */
+    imageOverlay: @Composable BoxScope.() -> Unit = {},
     overlayContent: @Composable BoxScope.() -> Unit = {},
 ) {
     var scale by remember { mutableFloatStateOf(minScale) }
@@ -128,7 +130,7 @@ fun ZoomableImage(
                     )
                 }
         ) {
-            RemoteImage(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
@@ -138,11 +140,16 @@ fun ZoomableImage(
                         translationY = offsetY
                         rotationZ = rotationDegrees
                     },
-                model = model,
-                contentScale = contentScale,
-                showShimmer = true,
-                placeholderSeed = model,
-            )
+            ) {
+                RemoteImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = model,
+                    contentScale = contentScale,
+                    showShimmer = true,
+                    placeholderSeed = model,
+                )
+                imageOverlay()
+            }
             overlayContent()
         }
     }

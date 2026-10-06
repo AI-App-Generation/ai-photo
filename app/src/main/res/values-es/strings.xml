@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Photo</string>
+    <string name="app_name">Vezora</string>
 
     <string name="ok">Aceptar</string>
     <string name="cancel">Cancelar</string>
@@ -55,4 +55,77 @@
     <string name="welcome_back_title">¡Bienvenido de nuevo!</string>
     <string name="welcome_back_body">Tu estudio de IA está listo. Continúa justo donde lo dejaste.</string>
     <string name="welcome_back_continue">Continuar</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">Desinstalar</string>
+    <string name="uninstall_splash_loading">Un momento…</string>
+    <string name="uninstall_notice_title">¿Ya te vas?</string>
+    <string name="uninstall_notice_desc_empty">Todo lo que creas con IA vive dentro de esta app.</string>
+    <string name="uninstall_notice_desc">Tienes %1$d creaciones guardadas en este dispositivo. Al desinstalar se borrarán para siempre.</string>
+    <string name="uninstall_keep_app">Conservar la app</string>
+    <string name="uninstall_continue">Seguir desinstalando</string>
+    <string name="uninstall_survey_title">¿Por qué te vas?</string>
+    <string name="uninstall_survey_subtitle">Tu respuesta nos ayuda a mejorar la app.</string>
+    <string name="uninstall_reason_quality">Los resultados no son lo bastante buenos</string>
+    <string name="uninstall_reason_slow">Tarda demasiado</string>
+    <string name="uninstall_reason_ads">Demasiados anuncios</string>
+    <string name="uninstall_reason_price">Cuesta demasiado</string>
+    <string name="uninstall_reason_better">Encontré una app mejor</string>
+    <string name="uninstall_reason_other">Otro motivo</string>
+    <string name="uninstall_confirm">Desinstalar</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">No tienes créditos suficientes</string>
+    <string name="generating_error_credits_title">No tienes créditos suficientes</string>
+    <string name="generating_error_credits_hint">Necesitas 1 crédito para crear una imagen.</string>
+    <string name="credits_balance_description">%1$d créditos</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">Ver anuncio</string>
+    <string name="reward_unlock_pro">Desbloquear con PRO</string>
+    <string name="reward_view_plans">Ver planes</string>
+    <string name="reward_template_title">Usa esta plantilla PRO una vez</string>
+    <string name="reward_template_message">Mira un anuncio corto para desbloquear esta plantilla en una creación.</string>
+    <string name="reward_tool_title">Prueba esta herramienta PRO una vez</string>
+    <string name="reward_tool_message">Mira un anuncio corto para usar esta herramienta en una creación.</string>
+    <string name="reward_credits_title">Sin créditos</string>
+    <string name="reward_credits_message">Mira un anuncio corto para ganar 1 crédito y seguir creando.</string>
+    <string name="reward_save_title">Guardar sin marca de agua</string>
+    <string name="reward_save_message">Mira un anuncio corto para guardar esta imagen sin marca de agua, o hazte PRO para quitarla para siempre.</string>
+    <string name="reward_save_with_watermark">Guardar con marca de agua</string>
+    <string name="reward_ad_unavailable">No hay ningún anuncio disponible ahora. Inténtalo más tarde.</string>
+    <string name="reward_incomplete">Mira el anuncio completo para obtener la recompensa.</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">Elimina todos los anuncios de la app</string>
+    <string name="paywall_benefit_faster">Generación de imágenes más rápida</string>
+    <string name="paywall_benefit_no_watermark">Quita las marcas de agua y guarda imágenes en alta resolución</string>
+    <string name="paywall_benefit_premium_templates">Desbloquea las plantillas premium</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">Vezora PRO</string>
+    <string name="paywall_subtitle">Desbloquea todas las plantillas y herramientas</string>
+    <string name="paywall_close">Cerrar</string>
+    <string name="paywall_continue">Continuar</string>
+    <string name="paywall_restore">Restaurar</string>
+    <string name="paywall_terms">Términos</string>
+    <string name="paywall_privacy">Privacidad</string>
+    <string name="paywall_most_popular">MÁS POPULAR</string>
+    <string name="paywall_plan_weekly">Semanal</string>
+    <string name="paywall_plan_weekly_note">Pruébalo</string>
+    <string name="paywall_unit_weekly">por semana</string>
+    <string name="paywall_plan_monthly">Mensual</string>
+    <string name="paywall_plan_monthly_note">Mejor valor</string>
+    <string name="paywall_unit_monthly">por mes</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">Obtener créditos</string>
+    <string name="credit_store_subtitle">Cada imagen generada cuesta 1 crédito. Los créditos no caducan.</string>
+    <string name="credit_store_balance">Saldo: %1$d créditos</string>
+    <string name="credit_store_pack">%1$d créditos</string>
+    <string name="credit_store_best_value">MEJOR VALOR</string>
+    <string name="credit_store_purchased">+%1$d créditos añadidos</string>
+    <string name="credits_add_description">Obtener más créditos</string>
+    <string name="reward_buy_credits">Obtener créditos</string>
+    <string name="reward_credits_message_no_ad">Ya usaste tu crédito gratuito por anuncio. Obtén créditos para seguir creando.</string>
 </resources>

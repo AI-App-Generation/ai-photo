@@ -56,19 +56,19 @@ data class Template(
             ?: ""
 
     /**
-     * "Before" half of the Template Detail hero compare slider.
+     * "Before" half of the Template Detail hero compare slider: the example INPUT photo.
      *
-     * The catalog has no dedicated before/after pair, so the policy is fixed here once rather
-     * than re-invented at each call site: the second example image when the catalog supplies two,
-     * otherwise the thumbnail. Both lists can be empty (Risks #15), in which case this is null and
-     * the caller falls back to GradientPlaceholder.
+     * In the catalog `example_imgs` are the sample photos a user would feed in (files named
+     * `<Name>_example_0`, plus `_example_1` for two-photo templates), while `template_webp_url` is
+     * the finished showcase result. So before = the first example photo. It is null when the
+     * catalog supplies no example (183 of the usable templates), in which case the hero shows the
+     * result on its own instead of a slider.
      */
     val compareBeforeUrl: String?
-        get() = exampleImgs.getOrNull(1)?.takeIf { it.isNotBlank() }
-            ?: thumbUrl.takeIf { it.isNotBlank() }
+        get() = exampleImgs.firstOrNull()?.takeIf { it.isNotBlank() }
 
-    /** "After" half of the hero compare slider — the showcase result. See [compareBeforeUrl]. */
+    /** "After" half of the hero compare slider: the showcase RESULT (`template_webp_url`). See [compareBeforeUrl]. */
     val compareAfterUrl: String?
-        get() = exampleImgs.getOrNull(0)?.takeIf { it.isNotBlank() }
+        get() = thumbUrl.takeIf { it.isNotBlank() }
             ?: displayImageUrl.takeIf { it.isNotBlank() }
 }

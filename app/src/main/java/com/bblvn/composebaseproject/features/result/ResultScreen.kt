@@ -15,6 +15,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.Composable
+import com.bblvn.composebaseproject.ui.components.ads.ComposeNativeAdFrame
+import com.bblvn.composebaseproject.ads.AdsPolicy
+import com.bblvn.composebaseproject.ads.AdsLoader
+import com.bblvn.composebaseproject.ads.AdsPlacementHolder
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,12 +37,15 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bblvn.composebaseproject.R
+import com.bblvn.composebaseproject.core.AppCapability
 import com.bblvn.composebaseproject.core.OnUiEvent
 import com.bblvn.composebaseproject.core.UiAction
 import com.bblvn.composebaseproject.core.UiEvent
 import com.bblvn.composebaseproject.ui.components.AppToast
 import com.bblvn.composebaseproject.ui.components.ConfirmPopup
 import com.bblvn.composebaseproject.ui.components.ErrorState
+import com.bblvn.composebaseproject.ui.components.RewardPrompt
+import com.bblvn.composebaseproject.ui.components.RewardKind
 import com.bblvn.composebaseproject.ui.components.MenuEntry
 import com.bblvn.composebaseproject.ui.components.MenuPopup
 import com.bblvn.composebaseproject.ui.theme.AppColors
@@ -71,6 +80,35 @@ fun ResultScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
+    val activity = LocalActivity.current
+    val adsActive by AdsLoader.isActive.collectAsState()
+
+    // Chiều cao ô native_result ở đáy, để vùng ảnh co lại đúng bằng nó và ảnh không bị ad che.
+    var adHeight by remember { mutableStateOf(0.dp) }
+    // Chặn bấm Save lần hai trong lúc inter còn đang nạp/hiện.
+    var saveAdBusy by remember { mutableStateOf(false) }
+    // Dialog "xem quảng cáo thưởng hoặc mở paywall": Save của user free, hoặc Regenerate khi hết credit.
+    var rewardKind by remember { mutableStateOf<RewardKind?>(null) }
+
+    // Lưu CÓ watermark: chen inter_save rồi mới lưu; đóng, lỗi hay bị bỏ qua đều gọi lưu. force = true
+    // vì inter này không chịu giãn cách 30s của inter_tab/open_*.
+    fun saveWithWatermark() {
+        val host = activity
+        if (host == null) {
+            vm.save()
+        } else if (!saveAdBusy) {
+            saveAdBusy = true
+            AdsPolicy.showInterAd(
+                activity = host,
+                adPlacement = AdsPlacementHolder.INTER_SAVE,
+                force = true,
+                onContinue = {
+                    saveAdBusy = false
+                    vm.save()
+                },
+            )
+        }
+    }
 
     var toastText by remember { mutableStateOf<String?>(null) }
     var menuVisible by remember { mutableStateOf(false) }
@@ -119,15 +157,20 @@ fun ResultScreen(
         else permissionLauncher.launch(permission)
     }
 
+    var viewerOf by remember { mutableStateOf<String?>(null) }
+    var viewerIsResult by remember { mutableStateOf(false) }
+    val isPremiumNow by com.bblvn.composebaseproject.core.AppCapability.isPremium.collectAsState()
+
     Box(modifier = modifier.fillMaxSize().background(AppColors.bgRoot)) {
 
         val resultPath = state.resultPath
         if (resultPath != null) {
             ResultStage(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(bottom = if (adsActive) adHeight else 0.dp),
                 resultPath = resultPath,
                 sourcePath = state.sourcePath,
                 playReveal = state.playReveal,
+                onOpenImage = { isSource -> viewerOf = if (isSource) state.sourcePath else resultPath; viewerIsResult = !isSource },
             )
         } else if (state.isMissing) {
             // An old creation whose result file was pruned, or a row already deleted.
@@ -164,7 +207,11 @@ fun ResultScreen(
                 ResultActionRow(
                     canRegenerate = state.canRegenerate,
                     enabled = resultPath != null && !state.isBusy,
-                    onSave = { vm.save() },
+                    // User free: luôn hỏi "xem quảng cáo để lưu không watermark / mở paywall / lưu có
+                    // watermark". Premium lưu thẳng (không có watermark, cũng không có quảng cáo).
+                    onSave = {
+                        if (state.isPremium) saveWithWatermark() else rewardKind = RewardKind.HqSave
+                    },
                     onShare = vm::share,
                     onRegenerate = { confirmRegenerate = true },
                     onTryOther = onTryOther,
@@ -173,6 +220,19 @@ fun ResultScreen(
                     Spacer(Modifier.height(12.dp))
                     WatermarkNotice(onClick = vm::onWatermarkNoticeClick)
                 }
+                // native_result: dưới 4 nút. Dùng cỡ vừa (144dp) để ảnh kết quả vẫn là nhân vật chính.
+                ComposeNativeAdFrame(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp)
+                        .onSizeChanged { size ->
+                            // Cộng thêm 12dp padding phía trên ô để ảnh chừa đủ chỗ.
+                            adHeight = with(density) { size.height.toDp() } + 12.dp
+                        },
+                    layoutResId = R.layout.frame_ad_medium,
+                    templateAdLayoutRes = R.layout.template_ad_medium,
+                    adPlacement = AdsPlacementHolder.NATIVE_RESULT,
+                )
             }
         }
 
@@ -238,10 +298,54 @@ fun ResultScreen(
             cancelText = stringResource(R.string.cancel),
             onConfirm = {
                 confirmRegenerate = false
-                if (vm.regenerate()) onRegenerate()
+                // Hết credit: hỏi xem quảng cáo thưởng (hoặc mở paywall) thay vì chỉ báo lỗi.
+                if (!AppCapability.canAffordGeneration()) {
+                    rewardKind = RewardKind.Credits
+                } else if (vm.regenerate()) {
+                    onRegenerate()
+                }
             },
             onDismiss = { confirmRegenerate = false },
         )
+
+        RewardPrompt(
+            kind = rewardKind,
+            onGranted = { kind ->
+                when (kind) {
+                    // Xem hết quảng cáo: lưu ngay, không watermark (chỉ cho lần này).
+                    RewardKind.HqSave -> vm.save(noWatermark = true)
+                    // Có credit rồi thì Regenerate luôn.
+                    RewardKind.Credits -> {
+                        AppCapability.grantRewardedCredits()
+                        if (vm.regenerate()) onRegenerate()
+                    }
+                    else -> Unit
+                }
+            },
+            onOpenPaywall = {
+                rewardKind = null
+                onOpenPaywall()
+            },
+            onDismiss = { rewardKind = null },
+            // Chỉ Save mới có lựa chọn thứ ba: chấp nhận watermark.
+            onSkip = if (rewardKind == RewardKind.HqSave) {
+                {
+                    rewardKind = null
+                    saveWithWatermark()
+                }
+            } else {
+                null
+            },
+            skipText = R.string.reward_save_with_watermark,
+        )
+
+        viewerOf?.let { path ->
+            ResultImageViewer(
+                path = path,
+                showWatermark = viewerIsResult && !isPremiumNow,
+                onClose = { viewerOf = null },
+            )
+        }
 
         AppToast(
             visible = toastText != null,

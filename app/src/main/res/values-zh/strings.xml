@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Photo</string>
+    <string name="app_name">Vezora</string>
 
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
@@ -55,4 +55,77 @@
     <string name="welcome_back_title">欢迎回来！</string>
     <string name="welcome_back_body">你的 AI 工作室已就绪，从上次离开的地方继续吧。</string>
     <string name="welcome_back_continue">继续</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">卸载</string>
+    <string name="uninstall_splash_loading">请稍候…</string>
+    <string name="uninstall_notice_title">这么快就要走了吗？</string>
+    <string name="uninstall_notice_desc_empty">你用 AI 创作的一切都保存在这个应用里。</string>
+    <string name="uninstall_notice_desc">此设备上保存了 %1$d 件作品。卸载后将被永久删除。</string>
+    <string name="uninstall_keep_app">保留应用</string>
+    <string name="uninstall_continue">继续卸载</string>
+    <string name="uninstall_survey_title">你为什么要离开？</string>
+    <string name="uninstall_survey_subtitle">你的回答能帮助我们改进应用。</string>
+    <string name="uninstall_reason_quality">效果不够好</string>
+    <string name="uninstall_reason_slow">耗时太长</string>
+    <string name="uninstall_reason_ads">广告太多</string>
+    <string name="uninstall_reason_price">价格太贵</string>
+    <string name="uninstall_reason_better">我找到了更好的应用</string>
+    <string name="uninstall_reason_other">其他原因</string>
+    <string name="uninstall_confirm">卸载</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">额度不足</string>
+    <string name="generating_error_credits_title">额度不足</string>
+    <string name="generating_error_credits_hint">生成一张图片需要 1 个额度。</string>
+    <string name="credits_balance_description">%1$d 个额度</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">观看广告</string>
+    <string name="reward_unlock_pro">升级 PRO 解锁</string>
+    <string name="reward_view_plans">查看方案</string>
+    <string name="reward_template_title">使用此 PRO 模板一次</string>
+    <string name="reward_template_message">观看一段短广告，即可为一次创作解锁此模板。</string>
+    <string name="reward_tool_title">试用此 PRO 工具一次</string>
+    <string name="reward_tool_message">观看一段短广告，即可为一次创作使用此工具。</string>
+    <string name="reward_credits_title">额度已用完</string>
+    <string name="reward_credits_message">观看一段短广告，获得 1 个额度，继续创作。</string>
+    <string name="reward_save_title">无水印保存</string>
+    <string name="reward_save_message">观看一段短广告，即可无水印保存此图片，或升级 PRO 永久去除水印。</string>
+    <string name="reward_save_with_watermark">带水印保存</string>
+    <string name="reward_ad_unavailable">目前没有可用的广告，请稍后再试。</string>
+    <string name="reward_incomplete">请完整观看广告以获得奖励。</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">移除应用内所有广告</string>
+    <string name="paywall_benefit_faster">更快的图片生成</string>
+    <string name="paywall_benefit_no_watermark">去除水印并保存高分辨率图片</string>
+    <string name="paywall_benefit_premium_templates">解锁高级模板</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">Vezora PRO</string>
+    <string name="paywall_subtitle">解锁所有模板和工具</string>
+    <string name="paywall_close">关闭</string>
+    <string name="paywall_continue">继续</string>
+    <string name="paywall_restore">恢复购买</string>
+    <string name="paywall_terms">条款</string>
+    <string name="paywall_privacy">隐私</string>
+    <string name="paywall_most_popular">最受欢迎</string>
+    <string name="paywall_plan_weekly">每周</string>
+    <string name="paywall_plan_weekly_note">试用</string>
+    <string name="paywall_unit_weekly">每周</string>
+    <string name="paywall_plan_monthly">每月</string>
+    <string name="paywall_plan_monthly_note">最超值</string>
+    <string name="paywall_unit_monthly">每月</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">获取积分</string>
+    <string name="credit_store_subtitle">每生成一张图片消耗 1 积分。积分永不过期。</string>
+    <string name="credit_store_balance">余额：%1$d 积分</string>
+    <string name="credit_store_pack">%1$d 积分</string>
+    <string name="credit_store_best_value">最超值</string>
+    <string name="credit_store_purchased">已添加 +%1$d 积分</string>
+    <string name="credits_add_description">获取更多积分</string>
+    <string name="reward_buy_credits">获取积分</string>
+    <string name="reward_credits_message_no_ad">您已用完观看广告获得积分的机会。获取积分即可继续创作。</string>
 </resources>

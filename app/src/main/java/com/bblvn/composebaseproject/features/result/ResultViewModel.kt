@@ -3,6 +3,7 @@ package com.bblvn.composebaseproject.features.result
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.bblvn.composebaseproject.R
+import com.bblvn.composebaseproject.core.AppCapability
 import com.bblvn.composebaseproject.core.StateViewModel
 import com.bblvn.composebaseproject.core.UiAction
 import com.bblvn.composebaseproject.core.UiEvent
@@ -149,7 +150,9 @@ class ResultViewModel : StateViewModel<ResultUiState>(ResultUiState()) {
      * in exactly one place (R6.7). [afterPermissionGrant] marks the single retry that follows a
      * permission request, so a still-missing permission cannot loop.
      */
-    fun save(afterPermissionGrant: Boolean = false) {
+    fun save(afterPermissionGrant: Boolean = false, noWatermark: Boolean = false) {
+        // Lần thử lại sau khi cấp quyền giữ nguyên lựa chọn ban đầu của lần bấm.
+        if (!afterPermissionGrant) skipWatermark = noWatermark
         val path = currentState.resultPath ?: return
         val id = currentState.creationId
         if (currentState.isBusy) return
@@ -158,7 +161,8 @@ class ResultViewModel : StateViewModel<ResultUiState>(ResultUiState()) {
             FileManager.exportForUser(
                 source = File(path),
                 displayName = DateUtils.exportFileName(),
-                watermark = PremiumManager.shouldWatermarkExports(),
+                // skipWatermark: user xem quảng cáo thưởng để lưu ảnh không watermark (một lần).
+                watermark = PremiumManager.shouldWatermarkExports() && !skipWatermark,
             ).onSuccess {
                 if (id != null) CreationRepo.markSaved(id)
                 update { it.copy(isBusy = false, savedToGallery = true) }
@@ -176,6 +180,9 @@ class ResultViewModel : StateViewModel<ResultUiState>(ResultUiState()) {
      * bug); it still goes through [FileManager.exportForUser] so the MediaStore/legacy branch and
      * the IOException handling stay in one place.
      */
+    /** Lần Save đang chạy có được bỏ watermark nhờ xem quảng cáo thưởng không. */
+    private var skipWatermark = false
+
     fun saveSource() {
         val path = currentState.sourcePath ?: return
         if (currentState.isBusy) return
@@ -237,6 +244,10 @@ class ResultViewModel : StateViewModel<ResultUiState>(ResultUiState()) {
         val row = creation
         if (row == null || !currentState.canRegenerate) {
             toast(UiText.Res(R.string.result_toast_regenerate_unavailable))
+            return false
+        }
+        if (!AppCapability.canAffordGeneration()) {
+            toast(UiText.Res(R.string.credits_not_enough))
             return false
         }
         if (GenerationEngine.regenerate(row)) return true

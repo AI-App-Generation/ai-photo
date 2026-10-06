@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.features.language
 
+import androidx.compose.runtime.collectAsState
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
@@ -88,7 +89,13 @@ fun LanguageScreen(
     onBack: (() -> Unit)? = null,
     onNext: () -> Unit = {},
 ) {
-    LogScreenView(if (onBack != null) "LanguageSettings" else "Language")
+    // _1 cho lần mở app đầu tiên, _2 cho mọi lần sau — cùng quy ước với inter_splash / _2.
+    val isFirstTime by SettingManager.isFirstTime.collectAsState()
+    // Chỉ log khi màn nằm trong luồng khởi động (onBack == null). Mở từ Settings để đổi ngôn ngữ
+    // không phải là "lần 2 vào app" nên không được tính vào language_2_view.
+    if (onBack == null) {
+        LogScreenView(if (isFirstTime) "language_1_view" else "language_2_view")
+    }
 
     val isSettings = onBack != null
 
@@ -244,6 +251,18 @@ private fun LanguageSelectionContent(
             onConfirm = onNext,
         )
 
+        // native_language_small: ô nhỏ ngay dưới title, ngoài ô lớn lfo1 ở đáy màn.
+        if (showAds) {
+            ComposeNativeAdFrame(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                layoutResId = R.layout.frame_ad_small,
+                templateAdLayoutRes = R.layout.template_ad_small,
+                adPlacement = AdsPlacementHolder.NATIVE_LANGUAGE_SMALL,
+            )
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -261,12 +280,11 @@ private fun LanguageSelectionContent(
                     isSelected = selectedLocaleId == language.localeId,
                     onClick = {
                         onLanguageSelected(language.localeId)
-                        // Sample: swap in a fresh impression of the same placement the first
-                        // time the user picks something. Apps forked from this template can
-                        // point this at a distinct placement (e.g. a "2nd" native slot).
+                        // Lần chọn đầu tiên nạp đè sang ô lfo2 (AdsPolicy tự đổi sang _2nd từ
+                        // lần mở app thứ 2).
                         if (!hasReloadedAd) {
                             hasReloadedAd = true
-                            reloadNativeAd(AdsPlacementHolder.NATIVE)
+                            reloadNativeAd(AdsPlacementHolder.NATIVE_LFO2)
                         }
                     },
                 )
@@ -275,7 +293,7 @@ private fun LanguageSelectionContent(
         if (showAds) {
             ComposeNativeAdFrame(
                 modifier = Modifier.fillMaxWidth(),
-                adPlacement = AdsPlacementHolder.NATIVE,
+                adPlacement = AdsPlacementHolder.NATIVE_LFO1,
                 onReloadReady = { reloadNativeAd = it },
             )
         }
@@ -330,12 +348,10 @@ private fun RegionSelectionContent(
                     isSelected = selectedRegionIndex == index,
                     onClick = {
                         onRegionSelected(index)
-                        // Sample: swap in a fresh impression of the same placement the first
-                        // time the user picks something. Apps forked from this template can
-                        // point this at a distinct placement (e.g. a "2nd" native slot).
+                        // Lần chọn đầu tiên nạp đè sang ô rg2.
                         if (!hasReloadedAd) {
                             hasReloadedAd = true
-                            reloadNativeAd(AdsPlacementHolder.NATIVE)
+                            reloadNativeAd(AdsPlacementHolder.NATIVE_RG2)
                         }
                     },
                 )
@@ -344,7 +360,7 @@ private fun RegionSelectionContent(
         if (showAds) {
             ComposeNativeAdFrame(
                 modifier = Modifier.fillMaxWidth(),
-                adPlacement = AdsPlacementHolder.NATIVE,
+                adPlacement = AdsPlacementHolder.NATIVE_RG1,
                 reloadOnResume = false,
                 onReloadReady = { reloadNativeAd = it },
             )

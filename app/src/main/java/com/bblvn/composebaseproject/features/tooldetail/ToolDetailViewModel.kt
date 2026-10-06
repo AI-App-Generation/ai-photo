@@ -3,6 +3,7 @@ package com.bblvn.composebaseproject.features.tooldetail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bblvn.composebaseproject.R
+import com.bblvn.composebaseproject.core.AppCapability
 import com.bblvn.composebaseproject.core.UiEvent
 import com.bblvn.composebaseproject.core.UiText
 import com.bblvn.composebaseproject.corefeatures.generation.FaceCheck
@@ -54,6 +55,13 @@ class ToolDetailViewModel : ViewModel() {
     }
 
     init {
+        // Có thêm / hết lượt mở khoá một lần cho tool này thì cập nhật cờ khoá ngay (nút CTA, nhãn PRO).
+        viewModelScope.launch {
+            AppCapability.unlockPasses.collect {
+                update { s -> s.copy(locked = !PremiumManager.canUseTool(s.tool)) }
+            }
+        }
+
         // The system Photo Picker fills the draft while this screen stays on top (no pop-back to
         // trigger syncFromDraft), so follow slot changes directly, like TemplateDetailViewModel.
         viewModelScope.launch {
@@ -129,6 +137,14 @@ class ToolDetailViewModel : ViewModel() {
             }
 
             !current.hasAllPhotos -> return
+
+            // Hết credit thì chặn từ đây, trước cả bước kiểm tra khuôn mặt và chuyển màn.
+            !AppCapability.canAffordGeneration() -> {
+                viewModelScope.launch {
+                    _events.send(UiEvent.ShowToast(UiText.Res(R.string.credits_not_enough)))
+                }
+                return
+            }
         }
 
         if (!current.tool.validatesFaceOnSlot0) {

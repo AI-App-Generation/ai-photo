@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.features.home
 
+import com.bblvn.composebaseproject.LogScreenView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,6 +23,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -42,7 +44,10 @@ import com.bblvn.composebaseproject.ui.components.AppChip
 import com.bblvn.composebaseproject.ui.components.AppChipSize
 import com.bblvn.composebaseproject.ui.components.AppChipStyle
 import com.bblvn.composebaseproject.ui.components.AppTopBar
+import com.bblvn.composebaseproject.ui.components.CreditChip
 import com.bblvn.composebaseproject.ui.components.ErrorState
+import com.bblvn.composebaseproject.ui.components.ads.AdCarousel
+import com.bblvn.composebaseproject.ui.components.ads.rememberAdCarouselSession
 import com.bblvn.composebaseproject.ui.theme.AppColors
 import com.bblvn.composebaseproject.ui.theme.AppGradients
 import com.bblvn.composebaseproject.ui.theme.AppType
@@ -58,8 +63,9 @@ private val TOP_BAR_FADE_DISTANCE = 24.dp
  * Home — Discover.
  *
  * Fixed violet halo at the top, a scrolling LazyColumn (banner carousel, quick tools, one row per
- * catalog category, 240dp tail spacer) and a fixed top bar overlaying it. No ads here by
- * deliberate decision (C4): the banner carousel already owns the top of the screen.
+ * catalog category, 240dp tail spacer) and a fixed top bar overlaying it. The only ad is the
+ * native-ad carousel (`native_swipe_home`) between the quick tools and the category rows; the
+ * banner carousel keeps the top of the screen to itself.
  */
 @Composable
 fun AiPhotoHomeScreen(
@@ -76,6 +82,7 @@ fun AiPhotoHomeScreen(
 
     // Required by the base project on the real Home screen.
     CheckForConsent()
+    LogScreenView("home_view")
 
     OnUiEvent(vm.events) { event ->
         when (event) {
@@ -85,6 +92,9 @@ fun AiPhotoHomeScreen(
     }
 
     val listState = rememberLazyListState()
+    // Mở ở mức màn hình (ngoài LazyColumn) để cuộn item ra/vào không làm nạp lại ad; đổi tab thì
+    // màn này rời composition và session được trả.
+    val adSession = rememberAdCarouselSession()
     val density = androidx.compose.ui.platform.LocalDensity.current
     val fadeDistancePx = remember(density) { with(density) { TOP_BAR_FADE_DISTANCE.toPx() } }
     val scrollFraction by remember(listState, fadeDistancePx) {
@@ -153,6 +163,14 @@ fun AiPhotoHomeScreen(
                     )
                 }
 
+                // native_swipe_home: dưới block tools, trước các hàng category.
+                item(key = "ad_carousel") {
+                    AdCarousel(
+                        session = adSession,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    )
+                }
+
                 items(
                     items = state.categories,
                     key = { it.categoryId },
@@ -192,10 +210,19 @@ fun AiPhotoHomeScreen(
                 )
             },
             trailing = {
-                AccountChip(
-                    isPremium = state.isPremium,
-                    onClick = vm::onAccountChipClick,
-                )
+                // Gói trong một Row riêng: AppTopBar tự chèn 4dp giữa các phần tử trực tiếp, nên nếu để
+                // hai chip ở cấp đó thì Spacer 8dp sẽ thành 16dp. Cách này cho đúng 8dp như màn Tools.
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CreditChip()
+                    // Đã trả phí thì ẩn hẳn: mời mua lần nữa là phản cảm.
+                    if (!state.isPremium) {
+                        Spacer(Modifier.width(8.dp))
+                        AccountChip(
+                            isPremium = false,
+                            onClick = vm::onAccountChipClick,
+                        )
+                    }
+                }
             },
         )
     }

@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.features.templatedetail
 
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -157,6 +158,8 @@ internal fun TemplateInfo(
     description: String,
     expanded: Boolean,
     onToggleExpand: () -> Unit,
+    /** Hiện nhãn PRO hay không: template PRO đã được mở khoá một lần thì ẩn đi. */
+    showProBadge: Boolean = template.isPremium,
 ) {
     var overflows by remember(description) { mutableStateOf(false) }
 
@@ -171,7 +174,7 @@ internal fun TemplateInfo(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
-            if (template.isPremium) {
+            if (showProBadge) {
                 PremiumBadge(
                     // R1 — Top, not CenterVertically: the badge must stay on the first line when
                     // the name wraps to two.
@@ -304,7 +307,8 @@ internal fun MoreFromCategory(
             contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(templates, key = { it.id }) { item ->
+            // Catalog có template trùng id (kể cả trong cùng một danh sách); khoá phải kèm vị trí, nếu không Compose báo trùng khoá và crash.
+            itemsIndexed(templates, key = { index, item -> "${item.id}_$index" }) { _, item ->
                 TemplateCard(
                     imageModel = item.displayImageUrl.ifBlank { null },
                     name = item.name,

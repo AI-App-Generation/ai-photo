@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Photo</string>
+    <string name="app_name">Vezora</string>
 
     <string name="ok">ОК</string>
     <string name="cancel">Отмена</string>
@@ -55,4 +55,77 @@
     <string name="welcome_back_title">С возвращением!</string>
     <string name="welcome_back_body">Ваша ИИ-студия готова. Продолжайте с того места, где остановились.</string>
     <string name="welcome_back_continue">Продолжить</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">Удалить</string>
+    <string name="uninstall_splash_loading">Секундочку…</string>
+    <string name="uninstall_notice_title">Уже уходите?</string>
+    <string name="uninstall_notice_desc_empty">Всё, что вы создаёте с помощью ИИ, хранится в этом приложении.</string>
+    <string name="uninstall_notice_desc">На этом устройстве сохранено работ: %1$d. При удалении приложения они будут стёрты навсегда.</string>
+    <string name="uninstall_keep_app">Оставить приложение</string>
+    <string name="uninstall_continue">Продолжить удаление</string>
+    <string name="uninstall_survey_title">Почему вы уходите?</string>
+    <string name="uninstall_survey_subtitle">Ваш ответ поможет нам улучшить приложение.</string>
+    <string name="uninstall_reason_quality">Результаты недостаточно хороши</string>
+    <string name="uninstall_reason_slow">Слишком долго</string>
+    <string name="uninstall_reason_ads">Слишком много рекламы</string>
+    <string name="uninstall_reason_price">Слишком дорого</string>
+    <string name="uninstall_reason_better">Я нашёл приложение лучше</string>
+    <string name="uninstall_reason_other">Другая причина</string>
+    <string name="uninstall_confirm">Удалить</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">Недостаточно кредитов</string>
+    <string name="generating_error_credits_title">Недостаточно кредитов</string>
+    <string name="generating_error_credits_hint">Нужен 1 кредит, чтобы создать изображение.</string>
+    <string name="credits_balance_description">Кредитов: %1$d</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">Смотреть рекламу</string>
+    <string name="reward_unlock_pro">Открыть с PRO</string>
+    <string name="reward_view_plans">Посмотреть тарифы</string>
+    <string name="reward_template_title">Использовать этот PRO-шаблон один раз</string>
+    <string name="reward_template_message">Посмотрите короткую рекламу, чтобы открыть этот шаблон для одного создания.</string>
+    <string name="reward_tool_title">Попробовать этот PRO-инструмент один раз</string>
+    <string name="reward_tool_message">Посмотрите короткую рекламу, чтобы использовать этот инструмент для одного создания.</string>
+    <string name="reward_credits_title">Кредиты закончились</string>
+    <string name="reward_credits_message">Посмотрите короткую рекламу, чтобы получить 1 кредит и продолжить.</string>
+    <string name="reward_save_title">Сохранить без водяного знака</string>
+    <string name="reward_save_message">Посмотрите короткую рекламу, чтобы сохранить это изображение без водяного знака, или перейдите на PRO, чтобы убрать его навсегда.</string>
+    <string name="reward_save_with_watermark">Сохранить с водяным знаком</string>
+    <string name="reward_ad_unavailable">Сейчас нет доступной рекламы. Попробуйте позже.</string>
+    <string name="reward_incomplete">Досмотрите рекламу до конца, чтобы получить награду.</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">Уберите всю рекламу в приложении</string>
+    <string name="paywall_benefit_faster">Более быстрое создание изображений</string>
+    <string name="paywall_benefit_no_watermark">Уберите водяные знаки и сохраняйте изображения в высоком разрешении</string>
+    <string name="paywall_benefit_premium_templates">Откройте премиум-шаблоны</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">Vezora PRO</string>
+    <string name="paywall_subtitle">Откройте все шаблоны и инструменты</string>
+    <string name="paywall_close">Закрыть</string>
+    <string name="paywall_continue">Продолжить</string>
+    <string name="paywall_restore">Восстановить</string>
+    <string name="paywall_terms">Условия</string>
+    <string name="paywall_privacy">Конфиденциальность</string>
+    <string name="paywall_most_popular">САМЫЙ ПОПУЛЯРНЫЙ</string>
+    <string name="paywall_plan_weekly">Неделя</string>
+    <string name="paywall_plan_weekly_note">Попробовать</string>
+    <string name="paywall_unit_weekly">в неделю</string>
+    <string name="paywall_plan_monthly">Месяц</string>
+    <string name="paywall_plan_monthly_note">Самая выгодная</string>
+    <string name="paywall_unit_monthly">в месяц</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">Получить кредиты</string>
+    <string name="credit_store_subtitle">Одно создание изображения стоит 1 кредит. Кредиты не сгорают.</string>
+    <string name="credit_store_balance">Баланс: %1$d кредитов</string>
+    <string name="credit_store_pack">%1$d кредитов</string>
+    <string name="credit_store_best_value">САМАЯ ВЫГОДНАЯ</string>
+    <string name="credit_store_purchased">Добавлено +%1$d кредитов</string>
+    <string name="credits_add_description">Получить больше кредитов</string>
+    <string name="reward_buy_credits">Получить кредиты</string>
+    <string name="reward_credits_message_no_ad">Вы уже использовали бесплатный кредит за рекламу. Получите кредиты, чтобы продолжить.</string>
 </resources>

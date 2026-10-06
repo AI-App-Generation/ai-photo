@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.bblvn.composebaseproject.ads.AdsLoader
 import com.bblvn.composebaseproject.ads.AdsPlacementHolder
 import com.bblvn.composebaseproject.R
+import com.bblvn.composebaseproject.ui.theme.AppColors
 
 @Preview
 @Composable
@@ -39,10 +40,9 @@ fun ComposeNativeAdDialog(
 
     val isActive by AdsLoader.isActive.collectAsState()
 
+    // Không tô nền ở đây: frame_ad tự có nền tối bo góc, nền trắng sẽ lộ ra ở hai góc bo.
     if (visible && isActive) Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.White)
+        modifier = modifier.fillMaxWidth()
     ) {
         ComposeNativeAdFrame(
             layoutResId = R.layout.frame_ad,
@@ -55,7 +55,7 @@ fun ComposeNativeAdDialog(
                 .padding(16.dp)
                 .size(24.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFBDBDBD))
+                .background(AppColors.bgElevated.copy(alpha = 0.85f))
                 .clickable {
                     visible = false
                     onClose()

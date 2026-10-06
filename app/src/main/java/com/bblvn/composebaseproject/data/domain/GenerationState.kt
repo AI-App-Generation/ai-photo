@@ -50,5 +50,8 @@ enum class FailureReason {
     NO_FACE_DETECTED,
     STORAGE_FULL,
     INTERRUPTED,
+
+    /** Không đủ credit cho lượt tạo ảnh (xem AppCapability). Không có gì để thử lại ngay. */
+    INSUFFICIENT_CREDITS,
     UNKNOWN,
 }

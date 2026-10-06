@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Photo</string>
+    <string name="app_name">Vezora</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Hủy</string>
@@ -24,7 +24,7 @@
     <string name="select_region">Chọn khu vực</string>
 
     <!-- Home - Discover -->
-    <string name="home_app_title">AI Photo</string>
+    <string name="home_app_title">Vezora</string>
     <string name="home_account_pro">PRO</string>
     <string name="home_banner_before_after">TRƯỚC / SAU</string>
     <string name="home_quick_tools">Công cụ nhanh</string>
@@ -133,10 +133,10 @@
     <string name="picker_empty_title">Chưa có ảnh nào</string>
     <string name="picker_empty_message">Album này chưa có ảnh. Hãy chụp một tấm để bắt đầu.</string>
     <string name="picker_permission_title">Cần quyền truy cập ảnh</string>
-    <string name="picker_permission_message">AI Photo chỉ đọc đúng tấm ảnh bạn chọn.</string>
+    <string name="picker_permission_message">Vezora chỉ đọc đúng tấm ảnh bạn chọn.</string>
     <string name="picker_permission_grant">Cấp quyền</string>
     <string name="picker_permission_settings">Mở cài đặt</string>
-    <string name="picker_partial_access">Bạn mới chia sẻ một phần ảnh cho AI Photo.</string>
+    <string name="picker_partial_access">Bạn mới chia sẻ một phần ảnh cho Vezora.</string>
     <string name="picker_select_more">Chọn thêm</string>
     <string name="picker_error_copy_failed">Không mở được ảnh này</string>
     <string name="picker_error_camera">Máy không có ứng dụng camera</string>
@@ -210,7 +210,7 @@
     <string name="profile_title">Hồ sơ</string>
     <string name="profile_plan_free">Gói miễn phí</string>
     <string name="profile_plan_free_note">Nâng cấp để mở khoá tất cả</string>
-    <string name="profile_plan_pro">AI Photo PRO</string>
+    <string name="profile_plan_pro">Vezora PRO</string>
     <string name="profile_plan_pro_note">Đã kích hoạt</string>
     <string name="profile_upgrade">Nâng cấp</string>
     <string name="profile_stat_created">Đã tạo</string>
@@ -234,7 +234,7 @@
     <string name="profile_privacy">Chính sách bảo mật</string>
     <string name="profile_terms">Điều khoản sử dụng</string>
     <string name="profile_version">Phiên bản</string>
-    <string name="paywall_title">AI Photo PRO</string>
+    <string name="paywall_title">Vezora PRO</string>
     <string name="paywall_subtitle">Mở khoá toàn bộ template và công cụ</string>
     <string name="paywall_close">Đóng</string>
     <string name="paywall_continue">Tiếp tục</string>
@@ -305,4 +305,61 @@
     <string name="welcome_back_title">Chào mừng trở lại!</string>
     <string name="welcome_back_body">Studio AI của bạn đã sẵn sàng. Tiếp tục ngay từ chỗ bạn đang dở.</string>
     <string name="welcome_back_continue">Tiếp tục</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">Gỡ cài đặt</string>
+    <string name="uninstall_splash_loading">Chờ một chút…</string>
+    <string name="uninstall_notice_title">Bạn muốn đi rồi sao?</string>
+    <string name="uninstall_notice_desc_empty">Mọi thứ bạn tạo bằng AI đều nằm trong ứng dụng này.</string>
+    <string name="uninstall_notice_desc">Bạn có %1$d tác phẩm đang lưu trên thiết bị này. Gỡ ứng dụng sẽ xoá chúng vĩnh viễn.</string>
+    <string name="uninstall_keep_app">Giữ lại ứng dụng</string>
+    <string name="uninstall_continue">Tiếp tục gỡ</string>
+    <string name="uninstall_survey_title">Vì sao bạn rời đi?</string>
+    <string name="uninstall_survey_subtitle">Câu trả lời giúp chúng tôi cải thiện ứng dụng.</string>
+    <string name="uninstall_reason_quality">Kết quả chưa đủ tốt</string>
+    <string name="uninstall_reason_slow">Mất quá nhiều thời gian</string>
+    <string name="uninstall_reason_ads">Quá nhiều quảng cáo</string>
+    <string name="uninstall_reason_price">Giá quá cao</string>
+    <string name="uninstall_reason_better">Tôi tìm được ứng dụng tốt hơn</string>
+    <string name="uninstall_reason_other">Lý do khác</string>
+    <string name="uninstall_confirm">Gỡ cài đặt</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">Không đủ credit</string>
+    <string name="generating_error_credits_title">Không đủ credit</string>
+    <string name="generating_error_credits_hint">Bạn cần 1 credit để tạo một ảnh.</string>
+    <string name="credits_balance_description">%1$d credit</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">Xem quảng cáo</string>
+    <string name="reward_unlock_pro">Mở khoá với PRO</string>
+    <string name="reward_view_plans">Xem các gói</string>
+    <string name="reward_template_title">Dùng thử template PRO một lần</string>
+    <string name="reward_template_message">Xem một quảng cáo ngắn để mở khoá template này cho một lần tạo ảnh.</string>
+    <string name="reward_tool_title">Dùng thử công cụ PRO một lần</string>
+    <string name="reward_tool_message">Xem một quảng cáo ngắn để dùng công cụ này cho một lần tạo ảnh.</string>
+    <string name="reward_credits_title">Hết credit</string>
+    <string name="reward_credits_message">Xem một quảng cáo ngắn để nhận 1 credit và tiếp tục tạo ảnh.</string>
+    <string name="reward_save_title">Lưu ảnh không watermark</string>
+    <string name="reward_save_message">Xem một quảng cáo ngắn để lưu ảnh không có watermark, hoặc nâng cấp PRO để bỏ hẳn.</string>
+    <string name="reward_save_with_watermark">Lưu kèm watermark</string>
+    <string name="reward_ad_unavailable">Hiện chưa có quảng cáo nào. Vui lòng thử lại sau.</string>
+    <string name="reward_incomplete">Hãy xem hết quảng cáo để nhận thưởng.</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">Gỡ bỏ tất cả quảng cáo trong ứng dụng</string>
+    <string name="paywall_benefit_faster">Tăng tốc tạo ảnh</string>
+    <string name="paywall_benefit_no_watermark">Xoá watermark, lưu ảnh độ phân giải cao</string>
+    <string name="paywall_benefit_premium_templates">Mở khoá các mẫu ảnh cao cấp</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">Nạp credit</string>
+    <string name="credit_store_subtitle">Mỗi lần tạo ảnh tốn 1 credit. Credit không bao giờ hết hạn.</string>
+    <string name="credit_store_balance">Số dư: %1$d credit</string>
+    <string name="credit_store_pack">%1$d credit</string>
+    <string name="credit_store_best_value">TIẾT KIỆM NHẤT</string>
+    <string name="credit_store_purchased">Đã cộng +%1$d credit</string>
+    <string name="credits_add_description">Nạp thêm credit</string>
+    <string name="reward_buy_credits">Nạp credit</string>
+    <string name="reward_credits_message_no_ad">Bạn đã dùng hết lượt xem quảng cáo nhận credit. Hãy nạp credit để tiếp tục tạo ảnh.</string>
 </resources>

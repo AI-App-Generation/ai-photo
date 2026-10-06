@@ -18,8 +18,8 @@ android {
         applicationId = "com.vezora.photo.ai.generator"
         minSdk = 24
         targetSdk = 37
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -58,7 +58,7 @@ android {
 
 
     val appIdDebug = "ca-app-pub-3940256099942544~3347511713"
-    val appIdRelease = "ca-app-pub-3850749456614322~8864378632"
+    val appIdRelease = "ca-app-pub-3850749456614322~4833244952"
 
     buildTypes {
         debug {
@@ -88,7 +88,7 @@ android {
             buildConfigField(
                 "String",
                 "NEWPORT_KEY",
-                "\"sk-0a7544c25cc8412e9a9ea496d39b5512\""
+                "\"sk-1719073889184fc8a9a8ed199cc982bc\""
             )
         }
     }

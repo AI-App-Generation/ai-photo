@@ -99,6 +99,8 @@ fun AppChip(
     text: String? = null,
     @DrawableRes icon: Int? = null,
     @DrawableRes trailingIcon: Int? = null,
+    /** Màu riêng cho [icon]; null thì theo màu chữ của style (hành vi mặc định). */
+    iconTint: Color? = null,
     size: AppChipSize = AppChipSize.Medium,
     style: AppChipStyle = AppChipStyle.Neutral,
     selected: Boolean = false,
@@ -150,7 +152,7 @@ fun AppChip(
             Icon(
                 painter = painterResource(icon),
                 contentDescription = null,
-                tint = content,
+                tint = iconTint ?: content,
                 modifier = Modifier.size(size.iconSize),
             )
             if (text != null) Spacer(Modifier.width(size.gap))

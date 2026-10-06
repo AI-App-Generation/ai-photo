@@ -40,11 +40,14 @@ import com.bblvn.composebaseproject.features.language.nativeLanguageName
 import com.bblvn.composebaseproject.ui.components.AppToast
 import com.bblvn.composebaseproject.ui.components.ButtonVariant
 import com.bblvn.composebaseproject.ui.components.ConfirmPopup
+import com.bblvn.composebaseproject.ui.components.CreditChip
 import com.bblvn.composebaseproject.ui.components.PrimaryButton
 import com.bblvn.composebaseproject.ui.components.SettingDivider
 import com.bblvn.composebaseproject.ui.components.SettingGroup
 import com.bblvn.composebaseproject.ui.components.SettingRow
 import com.bblvn.composebaseproject.ui.components.SettingTrailing
+import com.bblvn.composebaseproject.ui.components.ads.AdCarousel
+import com.bblvn.composebaseproject.ui.components.ads.rememberAdCarouselSession
 import com.bblvn.composebaseproject.ui.theme.AppColors
 import com.bblvn.composebaseproject.ui.theme.AppGradients
 import com.bblvn.composebaseproject.ui.theme.AppShapes
@@ -64,6 +67,8 @@ fun ProfileScreen(
     val context = LocalContext.current
     var toast by remember { mutableStateOf<String?>(null) }
     var confirmClearHistory by remember { mutableStateOf(false) }
+    // Mở ở mức màn hình (ngoài LazyColumn) để cuộn không làm nạp lại ad; đổi tab thì session được trả.
+    val adSession = rememberAdCarouselSession()
 
     OnUiEvent(vm.events) { event ->
         when (event) {
@@ -78,12 +83,17 @@ fun ProfileScreen(
             contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
             item {
-                Column(modifier = Modifier.statusBarsPadding().padding(top = 8.dp)) {
+                Row(
+                    modifier = Modifier.statusBarsPadding().padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Text(
+                        modifier = Modifier.weight(1f),
                         text = stringResource(R.string.profile_title),
                         style = AppType.display,
                         color = AppColors.textPrimary,
                     )
+                    CreditChip()
                 }
             }
 
@@ -115,6 +125,14 @@ fun ProfileScreen(
                         label = stringResource(R.string.profile_stat_templates),
                     )
                 }
+            }
+
+            // native_swipe_home: ngay trên cụm setting "App" (sau hàng thống kê).
+            item {
+                AdCarousel(
+                    session = adSession,
+                    modifier = Modifier.padding(top = 24.dp),
+                )
             }
 
             item {

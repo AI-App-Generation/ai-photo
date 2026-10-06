@@ -1,5 +1,6 @@
 package com.bblvn.composebaseproject.features.profile
 
+import com.bblvn.composebaseproject.core.AppCapability
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bblvn.composebaseproject.R
@@ -49,7 +50,7 @@ class ProfileViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             combine(
-                SettingManager.isPurchased,
+                AppCapability.isPremium,
                 SettingManager.highQuality,
                 SettingManager.autoSave,
                 CreationRepo.creations,

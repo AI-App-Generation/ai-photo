@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AI Photo</string>
+    <string name="app_name">Vezora</string>
 
     <string name="ok">OK</string>
     <string name="cancel">キャンセル</string>
@@ -55,4 +55,77 @@
     <string name="welcome_back_title">おかえりなさい！</string>
     <string name="welcome_back_body">AIスタジオの準備ができています。前回の続きから始めましょう。</string>
     <string name="welcome_back_continue">続ける</string>
+
+    <!-- Uninstall flow -->
+    <string name="uninstall_shortcut_label">アンインストール</string>
+    <string name="uninstall_splash_loading">少々お待ちください…</string>
+    <string name="uninstall_notice_title">もう行ってしまいますか？</string>
+    <string name="uninstall_notice_desc_empty">AIで作ったものはすべてこのアプリの中にあります。</string>
+    <string name="uninstall_notice_desc">このデバイスに%1$d件の作品が保存されています。アンインストールすると完全に削除されます。</string>
+    <string name="uninstall_keep_app">アプリを残す</string>
+    <string name="uninstall_continue">アンインストールを続ける</string>
+    <string name="uninstall_survey_title">なぜ離れるのですか？</string>
+    <string name="uninstall_survey_subtitle">いただいた回答はアプリの改善に役立てます。</string>
+    <string name="uninstall_reason_quality">結果が十分ではない</string>
+    <string name="uninstall_reason_slow">時間がかかりすぎる</string>
+    <string name="uninstall_reason_ads">広告が多すぎる</string>
+    <string name="uninstall_reason_price">料金が高すぎる</string>
+    <string name="uninstall_reason_better">より良いアプリを見つけた</string>
+    <string name="uninstall_reason_other">その他</string>
+    <string name="uninstall_confirm">アンインストール</string>
+
+    <!-- Credits -->
+    <string name="credits_not_enough">クレジットが足りません</string>
+    <string name="generating_error_credits_title">クレジットが足りません</string>
+    <string name="generating_error_credits_hint">画像を作成するには1クレジットが必要です。</string>
+    <string name="credits_balance_description">%1$dクレジット</string>
+
+    <!-- Rewarded dialog -->
+    <string name="reward_watch_ad">広告を見る</string>
+    <string name="reward_unlock_pro">PROで解除</string>
+    <string name="reward_view_plans">プランを見る</string>
+    <string name="reward_template_title">このPROテンプレートを1回使う</string>
+    <string name="reward_template_message">短い広告を見ると、このテンプレートを1回分の作成で使えます。</string>
+    <string name="reward_tool_title">このPROツールを1回試す</string>
+    <string name="reward_tool_message">短い広告を見ると、このツールを1回分の作成で使えます。</string>
+    <string name="reward_credits_title">クレジットがありません</string>
+    <string name="reward_credits_message">短い広告を見ると1クレジットを獲得して作成を続けられます。</string>
+    <string name="reward_save_title">透かしなしで保存</string>
+    <string name="reward_save_message">短い広告を見ると、この画像を透かしなしで保存できます。PROなら透かしを完全に外せます。</string>
+    <string name="reward_save_with_watermark">透かし付きで保存</string>
+    <string name="reward_ad_unavailable">現在表示できる広告がありません。しばらくしてからもう一度お試しください。</string>
+    <string name="reward_incomplete">報酬を受け取るには広告を最後までご覧ください。</string>
+
+    <!-- Paywall benefits (subscription) -->
+    <string name="paywall_benefit_remove_ads">アプリ内のすべての広告を非表示</string>
+    <string name="paywall_benefit_faster">画像生成を高速化</string>
+    <string name="paywall_benefit_no_watermark">透かしを削除し、高解像度で画像を保存</string>
+    <string name="paywall_benefit_premium_templates">プレミアムテンプレートを解放</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">Vezora PRO</string>
+    <string name="paywall_subtitle">すべてのテンプレートとツールを解放</string>
+    <string name="paywall_close">閉じる</string>
+    <string name="paywall_continue">続ける</string>
+    <string name="paywall_restore">復元</string>
+    <string name="paywall_terms">利用規約</string>
+    <string name="paywall_privacy">プライバシー</string>
+    <string name="paywall_most_popular">一番人気</string>
+    <string name="paywall_plan_weekly">週間プラン</string>
+    <string name="paywall_plan_weekly_note">お試し</string>
+    <string name="paywall_unit_weekly">週あたり</string>
+    <string name="paywall_plan_monthly">月間プラン</string>
+    <string name="paywall_plan_monthly_note">いちばんお得</string>
+    <string name="paywall_unit_monthly">月あたり</string>
+
+    <!-- Credit store -->
+    <string name="credit_store_title">クレジットを入手</string>
+    <string name="credit_store_subtitle">画像の生成1回につき1クレジットを使用します。クレジットに有効期限はありません。</string>
+    <string name="credit_store_balance">残高：%1$dクレジット</string>
+    <string name="credit_store_pack">%1$dクレジット</string>
+    <string name="credit_store_best_value">いちばんお得</string>
+    <string name="credit_store_purchased">+%1$dクレジットを追加しました</string>
+    <string name="credits_add_description">クレジットを追加</string>
+    <string name="reward_buy_credits">クレジットを入手</string>
+    <string name="reward_credits_message_no_ad">広告による無料クレジットはすでに使用済みです。クレジットを入手して続けましょう。</string>
 </resources>
